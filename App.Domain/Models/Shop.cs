@@ -25,5 +25,5 @@ public partial class Shop
 
     public virtual ICollection<OrdersToReview> OrdersToReviews { get; set; } = new List<OrdersToReview>();
 
-    public virtual ICollection<PickupRequest> PickupRequests { get; set; } = new List<PickupRequest>();
+    public virtual ICollection<PickUpRequest> PickupRequests { get; set; } = new List<PickUpRequest>();
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MyApp.Domain.Models;
 
-public partial class PickupRequest
+public partial class PickUpRequest
 {
     public int PickupRequestId { get; set; }
 

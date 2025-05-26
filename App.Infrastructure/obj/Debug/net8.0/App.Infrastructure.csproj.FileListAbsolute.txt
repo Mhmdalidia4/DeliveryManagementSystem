@@ -1,4 +1,5 @@
 C:\Users\mad40\source\repos\App\App.Infrastructure\bin\Debug\net8.0\App.Infrastructure.deps.json
+C:\Users\mad40\source\repos\App\App.Infrastructure\bin\Debug\net8.0\App.Infrastructure.runtimeconfig.json
 C:\Users\mad40\source\repos\App\App.Infrastructure\bin\Debug\net8.0\App.Infrastructure.dll
 C:\Users\mad40\source\repos\App\App.Infrastructure\bin\Debug\net8.0\App.Infrastructure.pdb
 C:\Users\mad40\source\repos\App\App.Infrastructure\bin\Debug\net8.0\App.Domain.dll
@@ -12,6 +13,5 @@ C:\Users\mad40\source\repos\App\App.Infrastructure\obj\Debug\net8.0\App.Infr.D9A
 C:\Users\mad40\source\repos\App\App.Infrastructure\obj\Debug\net8.0\App.Infrastructure.dll
 C:\Users\mad40\source\repos\App\App.Infrastructure\obj\Debug\net8.0\refint\App.Infrastructure.dll
 C:\Users\mad40\source\repos\App\App.Infrastructure\obj\Debug\net8.0\App.Infrastructure.pdb
-C:\Users\mad40\source\repos\App\App.Infrastructure\obj\Debug\net8.0\ref\App.Infrastructure.dll
-C:\Users\mad40\source\repos\App\App.Infrastructure\bin\Debug\net8.0\App.Infrastructure.runtimeconfig.json
 C:\Users\mad40\source\repos\App\App.Infrastructure\obj\Debug\net8.0\App.Infrastructure.genruntimeconfig.cache
+C:\Users\mad40\source\repos\App\App.Infrastructure\obj\Debug\net8.0\ref\App.Infrastructure.dll

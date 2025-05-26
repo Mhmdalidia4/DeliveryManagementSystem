@@ -1,4 +1,5 @@
 C:\Users\mad40\source\repos\App\App.Service\bin\Debug\net8.0\App.Service.deps.json
+C:\Users\mad40\source\repos\App\App.Service\bin\Debug\net8.0\App.Service.runtimeconfig.json
 C:\Users\mad40\source\repos\App\App.Service\bin\Debug\net8.0\App.Service.dll
 C:\Users\mad40\source\repos\App\App.Service\bin\Debug\net8.0\App.Service.pdb
 C:\Users\mad40\source\repos\App\App.Service\bin\Debug\net8.0\App.Domain.dll
@@ -14,6 +15,5 @@ C:\Users\mad40\source\repos\App\App.Service\obj\Debug\net8.0\App.Serv.6C426F77.U
 C:\Users\mad40\source\repos\App\App.Service\obj\Debug\net8.0\App.Service.dll
 C:\Users\mad40\source\repos\App\App.Service\obj\Debug\net8.0\refint\App.Service.dll
 C:\Users\mad40\source\repos\App\App.Service\obj\Debug\net8.0\App.Service.pdb
-C:\Users\mad40\source\repos\App\App.Service\obj\Debug\net8.0\ref\App.Service.dll
-C:\Users\mad40\source\repos\App\App.Service\bin\Debug\net8.0\App.Service.runtimeconfig.json
 C:\Users\mad40\source\repos\App\App.Service\obj\Debug\net8.0\App.Service.genruntimeconfig.cache
+C:\Users\mad40\source\repos\App\App.Service\obj\Debug\net8.0\ref\App.Service.dll

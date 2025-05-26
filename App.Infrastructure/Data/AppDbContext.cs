@@ -47,7 +47,7 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
 
-    public virtual DbSet<PickupRequest> PickupRequests { get; set; }
+    public virtual DbSet<PickUpRequest> PickupRequests { get; set; }
 
     public virtual DbSet<Shop> Shops { get; set; }
 
@@ -315,7 +315,7 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("FK__PaymentMe__Compa__59FA5E80");
         });
 
-        modelBuilder.Entity<PickupRequest>(entity =>
+        modelBuilder.Entity<PickUpRequest>(entity =>
         {
             entity.HasKey(e => e.PickupRequestId).HasName("PK__PickupRe__898E6238E46BB8F4");
 

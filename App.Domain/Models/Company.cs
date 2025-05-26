@@ -35,7 +35,7 @@ public partial class Company
 
     public virtual ICollection<PaymentMethod> PaymentMethods { get; set; } = new List<PaymentMethod>();
 
-    public virtual ICollection<PickupRequest> PickupRequests { get; set; } = new List<PickupRequest>();
+    public virtual ICollection<PickUpRequest> PickupRequests { get; set; } = new List<PickUpRequest>();
 
     public virtual ICollection<Shop> Shops { get; set; } = new List<Shop>();
 }

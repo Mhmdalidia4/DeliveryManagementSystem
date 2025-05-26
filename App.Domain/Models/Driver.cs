@@ -21,5 +21,5 @@ public partial class Driver
 
     public virtual ICollection<DriverAssignment> DriverAssignments { get; set; } = new List<DriverAssignment>();
 
-    public virtual ICollection<PickupRequest> PickupRequests { get; set; } = new List<PickupRequest>();
+    public virtual ICollection<PickUpRequest> PickupRequests { get; set; } = new List<PickUpRequest>();
 }
