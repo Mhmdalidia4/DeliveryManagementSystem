@@ -3197,7 +3197,9 @@
           "App.Infrastructure": "1.0.0",
           "AutoMapper": "13.0.1",
           "Microsoft.EntityFrameworkCore": "9.0.5",
-          "Microsoft.EntityFrameworkCore.SqlServer": "9.0.5"
+          "Microsoft.EntityFrameworkCore.SqlServer": "9.0.5",
+          "Microsoft.Extensions.Identity.Core": "8.0.13",
+          "Microsoft.Extensions.Identity.Stores": "8.0.13"
         },
         "compile": {
           "bin/placeholder/App.Service.dll": {}

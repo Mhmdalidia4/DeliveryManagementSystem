@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using App.Domain.DTOs;
 using AutoMapper;
 using global::AutoMapper;
-using MyApp.Domain.Models;
+using App.Domain.Models;
 
 namespace App.Service.AutoMapper{
     public class MappingProfile : Profile

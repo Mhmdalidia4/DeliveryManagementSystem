@@ -1,5 +1,5 @@
 ﻿using App.Domain.Interfaces.Base;
-using MyApp.Domain.Models;
+using App.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

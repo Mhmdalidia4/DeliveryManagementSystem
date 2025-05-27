@@ -1,6 +1,6 @@
 ﻿using App.Domain.Interfaces;
 using App.Infrastructure.Repositories.Base;
-using MyApp.Domain.Models;
+using App.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
