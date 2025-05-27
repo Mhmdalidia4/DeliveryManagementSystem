@@ -11,51 +11,79 @@ namespace App.Service.Managers
     {
         private readonly IBaseRepository<Driver> _driverRepo;
         private readonly IBaseRepository<Company> _companyRepo;
-        private readonly IBaseRepository<IdentityUser> _userRepo;
         private readonly IMapper _mapper;
+        private readonly UserManager<IdentityUser> _userManager;
 
         public DriverManager(
             IBaseRepository<Driver> driverRepo,
             IBaseRepository<Company> companyRepo,
-            IBaseRepository<IdentityUser> userRepo,
+            UserManager<IdentityUser> userManager,
             IMapper mapper)
         {
             _driverRepo = driverRepo;
             _companyRepo = companyRepo;
-            _userRepo = userRepo;
+            _userManager = userManager;
             _mapper = mapper;
         }
 
-        // 1. Get all drivers for a company (Admins, company owners)
+        // 1. Get all drivers for a company (only company owner)
         public async Task<IEnumerable<DriverDto>> GetAllDriversByCompanyAsync(int companyId, IdentityUser currentUser)
         {
-            if (!await CanManageCompanyAsync(currentUser, companyId))
+            var company = await _companyRepo.GetByIdAsync(companyId);
+            if (company == null || company.UserId != currentUser.Id)
                 throw new UnauthorizedAccessException("Not authorized to view drivers of this company.");
 
             var drivers = await _driverRepo.FindAsync(d => d.CompanyId == companyId);
             return _mapper.Map<IEnumerable<DriverDto>>(drivers);
         }
 
-        // 2. Add driver (Admins, company owners)
-        public async Task AddDriverAsync(DriverDto driverDto, IdentityUser currentUser)
+        // 2. Add driver (create IdentityUser, then Driver; only company owner can add)
+        public async Task<DriverDto> AddDriverAsync(
+            DriverDto driverDto,
+            string driverEmail,
+            string driverPassword,
+            IdentityUser currentUser)
         {
-            if (!await CanManageCompanyAsync(currentUser, driverDto.CompanyId))
+            // Ensure company exists and current user is owner
+            var company = await _companyRepo.GetByIdAsync(driverDto.CompanyId);
+            if (company == null || company.UserId != currentUser.Id)
                 throw new UnauthorizedAccessException("Not authorized to add drivers to this company.");
 
+            // 1. Create IdentityUser for driver
+            var identityUser = new IdentityUser
+            {
+                UserName = driverEmail,
+                Email = driverEmail,
+            };
+            var result = await _userManager.CreateAsync(identityUser, driverPassword);
+            if (!result.Succeeded)
+                throw new Exception($"Failed to create driver user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+
+            // Optionally add driver to 'driver' role
+            await _userManager.AddToRoleAsync(identityUser, "driver");
+
+            // 2. Map and add Driver
             var driver = _mapper.Map<Driver>(driverDto);
+            driver.UserId = identityUser.Id; // Reference to new IdentityUser
             await _driverRepo.AddAsync(driver);
+
+            // Return the created DriverDto (with new DriverId)
+            return _mapper.Map<DriverDto>(driver);
         }
 
-        // 3. Edit driver (Admins, company owners, the driver themself)
+        // 3. Edit driver (only driver themselves or company owner)
         public async Task EditDriverAsync(DriverDto driverDto, IdentityUser currentUser)
         {
             var driver = await _driverRepo.GetByIdAsync(driverDto.DriverId);
             if (driver == null)
                 throw new KeyNotFoundException("Driver not found.");
 
+            var company = await _companyRepo.GetByIdAsync(driver.CompanyId);
+
+            // Only driver or company owner can edit
             if (
-                !await CanManageCompanyAsync(currentUser, driver.CompanyId) &&
-                !IsDriverUser(currentUser, driver)
+                (driver.UserId != currentUser.Id) &&
+                (company == null || company.UserId != currentUser.Id)
             )
                 throw new UnauthorizedAccessException("Not authorized to edit this driver.");
 
@@ -67,55 +95,42 @@ namespace App.Service.Managers
             await _driverRepo.UpdateAsync(driver);
         }
 
-        // 4. Delete driver (Admins, company owners)
+        // 4. Delete driver (only company owner)
         public async Task DeleteDriverAsync(int driverId, IdentityUser currentUser)
         {
             var driver = await _driverRepo.GetByIdAsync(driverId);
             if (driver == null)
                 throw new KeyNotFoundException("Driver not found.");
 
-            if (!await CanManageCompanyAsync(currentUser, driver.CompanyId))
+            var company = await _companyRepo.GetByIdAsync(driver.CompanyId);
+            if (company == null || company.UserId != currentUser.Id)
                 throw new UnauthorizedAccessException("Not authorized to delete this driver.");
 
             await _driverRepo.DeleteAsync(driver);
+
+            // Optionally: You may also want to remove the IdentityUser for the driver!
+             var identityUser = await _userManager.FindByIdAsync(driver.UserId);
+             if (identityUser != null)
+                 await _userManager.DeleteAsync(identityUser);
         }
 
-        // 5. Get driver by ID (Admins, company owner, or the driver themselves)
+        // 5. Get driver by ID (only driver themselves or company owner)
         public async Task<DriverDto?> GetDriverByIdAsync(int driverId, IdentityUser currentUser)
         {
             var driver = await _driverRepo.GetByIdAsync(driverId);
             if (driver == null)
                 return null;
 
+            var company = await _companyRepo.GetByIdAsync(driver.CompanyId);
+
+            // Only driver or company owner can access
             if (
-                !await CanManageCompanyAsync(currentUser, driver.CompanyId) &&
-                !IsDriverUser(currentUser, driver)
+                (driver.UserId != currentUser.Id) &&
+                (company == null || company.UserId != currentUser.Id)
             )
                 throw new UnauthorizedAccessException("Not authorized to view this driver.");
 
             return _mapper.Map<DriverDto>(driver);
-        }
-
-        // --- Authorization Helpers ---
-
-        private async Task<bool> CanManageCompanyAsync(IdentityUser user, int companyId)
-        {
-            if (await IsAdminAsync(user))
-                return true;
-
-            var company = await _companyRepo.GetByIdAsync(companyId);
-            return company != null && user != null && company.UserId == user.Id;
-        }
-
-        private async Task<bool> IsAdminAsync(IdentityUser user)
-        {
-            // Replace with your real role/claims check!
-            return user != null && user.UserName == "admin";
-        }
-
-        private bool IsDriverUser(IdentityUser user, Driver driver)
-        {
-            return user != null && driver.UserId == user.Id;
         }
     }
 }

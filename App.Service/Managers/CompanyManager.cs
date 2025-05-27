@@ -1,31 +1,29 @@
 ﻿using App.Domain.DTOs;
 using App.Domain.Interfaces;
+using App.Domain.Interfaces.Base;
 using App.Domain.Models;
 using AutoMapper;
-using global::App.Domain.DTOs;
-using global::AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using App.Domain.Models;
-using App.Domain.Interfaces.Base;
 
 namespace App.Service.Managers
 {
-    public class CompanyManager{
+    public class CompanyManager
+    {
         private readonly IBaseRepository<Company> _companyRepo;
-        private readonly IBaseRepository<IdentityUser> _userRepo;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IMapper _mapper;
 
         public CompanyManager(
             IBaseRepository<Company> companyRepo,
-            IBaseRepository<IdentityUser> userRepo,
+            UserManager<IdentityUser> userManager,
             IMapper mapper)
         {
             _companyRepo = companyRepo;
-            _userRepo = userRepo;
+            _userManager = userManager;
             _mapper = mapper;
         }
 
-        // 1. Get all companies (Only allowed for admins)
+        // 1. Get all companies (Admins only)
         public async Task<IEnumerable<CompanyDto>> GetAllCompaniesAsync(IdentityUser currentUser)
         {
             if (!await IsAdminAsync(currentUser))
@@ -35,6 +33,18 @@ namespace App.Service.Managers
             return _mapper.Map<IEnumerable<CompanyDto>>(companies);
         }
 
+        // 2. Get company by id (Admins or owner)
+        public async Task<CompanyDto?> GetCompanyByIdAsync(int companyId, IdentityUser currentUser)
+        {
+            var company = await _companyRepo.GetByIdAsync(companyId);
+            if (company == null)
+                return null;
+
+            if (!await CanAccessCompanyAsync(currentUser, company))
+                throw new UnauthorizedAccessException("Not authorized to view this company.");
+
+            return _mapper.Map<CompanyDto>(company);
+        }
 
         // 3. Edit company (Only admin or the company user themself)
         public async Task EditCompanyAsync(CompanyDto companyDto, IdentityUser currentUser)
@@ -64,38 +74,7 @@ namespace App.Service.Managers
                 await _companyRepo.DeleteAsync(company);
         }
 
-        // 5. Get company by id (Admins or owner)
-        public async Task<CompanyDto?> GetCompanyByIdAsync(int companyId, IdentityUser currentUser)
-        {
-            var company = await _companyRepo.GetByIdAsync(companyId);
-            if (company == null)
-                return null;
-
-            if (!await CanAccessCompanyAsync(currentUser, company))
-                throw new UnauthorizedAccessException("Not authorized to view this company.");
-
-            return _mapper.Map<CompanyDto>(company);
-        }
-
-        // --- Authorization Helpers ---
-
-        private async Task<bool> IsAdminAsync(IdentityUser user)
-        {
-            // Example: Check if the user is in the "Admin" role
-            // If you use UserManager<IdentityUser>, replace this with real check
-            // This is a stub for demonstration:
-            return user != null && user.UserName == "admin";
-            // TODO: Replace with your real role/claim checks!
-        }
-
-        private async Task<bool> CanAccessCompanyAsync(IdentityUser user, Company company)
-        {
-            if (await IsAdminAsync(user))
-                return true;
-
-            // Owner logic: company.UserId == user.Id
-            return user != null && company.UserId == user.Id;
-        }
+        // 5. Add (extend) license to company (Admins only)
         public async Task<CompanyDto?> AddLicenseToCompanyAsync(int companyId, int monthsToAdd, IdentityUser currentUser)
         {
             if (!await IsAdminAsync(currentUser))
@@ -115,6 +94,7 @@ namespace App.Service.Managers
             return _mapper.Map<CompanyDto>(company);
         }
 
+        // 6. Remove license from company (Admins only)
         public async Task<CompanyDto?> RemoveLicenseFromCompanyAsync(int companyId, IdentityUser currentUser)
         {
             if (!await IsAdminAsync(currentUser))
@@ -131,6 +111,56 @@ namespace App.Service.Managers
             return _mapper.Map<CompanyDto>(company);
         }
 
+        // 7. Add new company (admin creates IdentityUser and company)
+        public async Task<CompanyDto> AddCompanyAsync(
+            CompanyDto companyDto,
+            string ownerEmail,
+            string ownerPassword,
+            IdentityUser currentUser // the admin performing the action
+        )
+        {
+            if (!await IsAdminAsync(currentUser))
+                throw new UnauthorizedAccessException("Only admin can create a company.");
+
+            // 1. Create IdentityUser for the company owner
+            var identityUser = new IdentityUser
+            {
+                UserName = ownerEmail,
+                Email = ownerEmail
+            };
+            var result = await _userManager.CreateAsync(identityUser, ownerPassword);
+            if (!result.Succeeded)
+                throw new Exception($"Failed to create company user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+
+            // Optionally add to 'company' role
+            await _userManager.AddToRoleAsync(identityUser, "company");
+
+            // 2. Map and add Company entity
+            var company = _mapper.Map<Company>(companyDto);
+            company.UserId = identityUser.Id; // Reference to new IdentityUser
+            company.CreatedAt = DateTime.Now;
+
+            await _companyRepo.AddAsync(company);
+
+            // Return the created CompanyDto (with new CompanyId)
+            return _mapper.Map<CompanyDto>(company);
+        }
+
+        // --- Authorization Helpers ---
+
+        private async Task<bool> IsAdminAsync(IdentityUser user)
+        {
+            // Use UserManager to check roles
+            return user != null && await _userManager.IsInRoleAsync(user, "admin");
+        }
+
+        private async Task<bool> CanAccessCompanyAsync(IdentityUser user, Company company)
+        {
+            if (await IsAdminAsync(user))
+                return true;
+
+            // Owner logic: company.UserId == user.Id
+            return user != null && company.UserId == user.Id;
+        }
     }
 }
-
