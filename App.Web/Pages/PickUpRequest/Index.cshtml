@@ -1,0 +1,141 @@
+﻿@page
+@model App.Web.pages.PickUpRequest.IndexModel
+@using App.Web.ViewModels
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var roles = await UserManager.GetRolesAsync(user);
+    string role = roles.FirstOrDefault() ?? "User";
+    bool isCompany = roles.Contains("company");
+    bool isShop = roles.Contains("shop");
+    Layout = "_Layout";
+}
+<style>
+    .main-content {
+        margin-left: 260px;
+        padding: 20px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .action-buttons .btn {
+        margin-left: 10px;
+    }
+
+    .table td,
+    .table th {
+        vertical-align: middle;
+    }
+
+    .action-btns .btn {
+        margin-right: 5px;
+    }
+</style>
+
+<!-- Sidebar (your dashboard layout) -->
+<div class="sidebar">
+    <div class="logo">Dashboard</div>
+    <div class="subtitle">Management System</div>
+
+    <div class="user-box">
+        <img src="https://i.pravatar.cc/150?u=@user.Email" alt="user" />
+        <div class="fw-bold">@user.UserName</div>
+        <div class="role">@role</div>
+    </div>
+
+    @if (isCompany || roles.Contains("driver") || isShop)
+    {
+        <a asp-page="/Orders"><i class="bi bi-bag"></i> Orders</a>
+        <a asp-page="/PickUpRequest/Index"><i class="bi bi-truck"></i> Pickup Request</a>
+        <a asp-page="/Reports"><i class="bi bi-bar-chart-line"></i> Reports</a>
+        <a asp-page="/Profile"><i class="bi bi-person-circle"></i> Profile</a>
+    }
+
+    @if (isCompany)
+    {
+        <a asp-page="/Settings"><i class="bi bi-gear"></i> Settings</a>
+        <a asp-page="/Drivers"><i class="bi bi-person-vcard"></i> Drivers</a>
+        <a asp-page="/Shops"><i class="bi bi-shop"></i> Shops</a>
+        <a asp-page="/Feedback"><i class="bi bi-chat-left-text"></i> Feedback</a>
+    }
+
+    @if (isCompany || isShop)
+    {
+        <a asp-page="/OrdersToReview"><i class="bi bi-list-check"></i> Order Review</a>
+    }
+
+    @if (roles.Contains("admin"))
+    {
+        <a asp-page="/Companies"><i class="bi bi-building"></i> Companies</a>
+        <a asp-page="/SystemLog"><i class="bi bi-journal-text"></i> System Logs</a>
+    }
+
+    <div class="footer">
+        © 2025 Dashboard System<br />
+        Version 1.0.0
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="page-header">
+        <h2 class="fw-bold">PickUpRequests</h2>
+        <div class="action-buttons">
+            <button class="btn btn-secondary">Filter</button>
+            <button class="btn btn-outline-success">Export</button>
+            @if (isCompany || isShop)
+            {
+                <a class="btn btn-primary" asp-page="/PickUpRequest/Add">Add</a>
+            }
+        </div>
+    </div>
+
+    <table class="table table-hover table-bordered shadow-sm">
+        <thead class="table-light">
+            <tr>
+                <th>PickUpRequestID</th>
+                <th>ShopName</th>
+                <th>RequestedAt</th>
+                <th>Driver</th>
+                <th>Status</th>
+                <th style="width: 140px;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var request in Model.PickupRequests)
+            {
+                <tr>
+                    <td>@request.PickupRequestId</td>
+                    <td>@request.ShopName</td>
+                    <td>@request.RequestedAt?.ToString("MMM dd, yyyy")</td>
+                    <td>@request.DriverName</td>
+                    <td>
+                        @if (request.IsCompleted == true)
+                        {
+                            <span class="badge bg-success">Completed</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        }
+                    </td>
+                    <td class="action-btns">
+                        <a class="btn btn-sm btn-outline-primary" asp-page="/PickUpRequest/Edit" asp-route-id="@request.PickupRequestId">Edit</a>
+                        @if (isCompany || isShop)
+                        {
+                            <a class="btn btn-sm btn-outline-danger" asp-page="/PickUpRequest/Delete" asp-route-id="@request.PickupRequestId">Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

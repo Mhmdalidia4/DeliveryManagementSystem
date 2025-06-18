@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using App.Domain.DTOs;
-using AutoMapper;
-using global::AutoMapper;
 using App.Domain.Models;
-
-namespace App.Service.AutoMapper{
+using App.Web.ViewModels;
+using AutoMapper;
+namespace App.Service.AutoMapper
+{
     public class MappingProfile : Profile
     {
         public MappingProfile()
@@ -46,12 +46,13 @@ namespace App.Service.AutoMapper{
             // OrdersToReview
             CreateMap<OrdersToReview, OrdersToReviewDto>().ReverseMap();
 
-            // PickupRequest
+            // PickupRequest → DTO
             CreateMap<PickUpRequest, PickupRequestDto>().ReverseMap();
 
-            // SystemLog
-            CreateMap<SystemLog, SystemLogDto>().ReverseMap();
+            // PickupRequest → ViewModel (for display purposes)
+            CreateMap<PickUpRequest, PickupRequestViewModel>()
+                .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop.Name))
+                .ForMember(dest => dest.DriverName, opt => opt.MapFrom(src => src.AssignedDriver.Name));
         }
     }
-
 }

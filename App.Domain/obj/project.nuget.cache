@@ -1,8 +1,19 @@
 {
   "version": 2,
-  "dgSpecHash": "Uy8Ca/JaD7g=",
+  "dgSpecHash": "BT8vlvGlbfk=",
   "success": true,
   "projectFilePath": "C:\\Users\\mad40\\source\\repos\\App\\App.Domain\\App.Domain.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\mad40\\.nuget\\packages\\microsoft.aspnetcore.connections.abstractions\\9.0.6\\microsoft.aspnetcore.connections.abstractions.9.0.6.nupkg.sha512",
+    "C:\\Users\\mad40\\.nuget\\packages\\microsoft.aspnetcore.signalr.common\\9.0.6\\microsoft.aspnetcore.signalr.common.9.0.6.nupkg.sha512",
+    "C:\\Users\\mad40\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\9.0.6\\microsoft.bcl.asyncinterfaces.9.0.6.nupkg.sha512",
+    "C:\\Users\\mad40\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.6\\microsoft.extensions.dependencyinjection.abstractions.9.0.6.nupkg.sha512",
+    "C:\\Users\\mad40\\.nuget\\packages\\microsoft.extensions.features\\9.0.6\\microsoft.extensions.features.9.0.6.nupkg.sha512",
+    "C:\\Users\\mad40\\.nuget\\packages\\microsoft.extensions.options\\9.0.6\\microsoft.extensions.options.9.0.6.nupkg.sha512",
+    "C:\\Users\\mad40\\.nuget\\packages\\microsoft.extensions.primitives\\9.0.6\\microsoft.extensions.primitives.9.0.6.nupkg.sha512",
+    "C:\\Users\\mad40\\.nuget\\packages\\system.io.pipelines\\9.0.6\\system.io.pipelines.9.0.6.nupkg.sha512",
+    "C:\\Users\\mad40\\.nuget\\packages\\system.text.encodings.web\\9.0.6\\system.text.encodings.web.9.0.6.nupkg.sha512",
+    "C:\\Users\\mad40\\.nuget\\packages\\system.text.json\\9.0.6\\system.text.json.9.0.6.nupkg.sha512"
+  ],
   "logs": []
 }

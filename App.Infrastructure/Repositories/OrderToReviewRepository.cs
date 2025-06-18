@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace App.Infrastructure.Repositories
 {
-    public class OrdersToReviewRepository : BaseRepository<OrdersToReview>, IOrderToReviewRepository
+    public class OrderToReviewRepository : BaseRepository<OrdersToReview>, IOrderToReviewRepository
     {
-        public OrdersToReviewRepository(AppDbContext context) : base(context)
+        public OrderToReviewRepository(AppDbContext context) : base(context)
         {
         }
 

@@ -9,6 +9,8 @@ namespace App.Domain.DTOs
     public class OrderAreaDto
     {
         public int OrderAreaId { get; set; }
+        public decimal DeliveryFees { get; set; }
+
         public int CompanyId { get; set; }
         public string? Name { get; set; }
     }

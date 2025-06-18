@@ -283,7 +283,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.CustomerName).HasMaxLength(255);
             entity.Property(e => e.CustomerPhone).HasMaxLength(50);
             entity.Property(e => e.Note).HasMaxLength(500);
-            entity.Property(e => e.ReceiptId).HasMaxLength(100);
+            entity.Property(e => e.Status).HasColumnType("bit");
             entity.Property(e => e.TrackingPassword).HasMaxLength(100);
 
             entity.HasOne(d => d.Company).WithMany(p => p.OrdersToReviews)

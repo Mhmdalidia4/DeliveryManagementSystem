@@ -2,12 +2,13 @@
 using App.Domain.Interfaces;
 using App.Domain.Interfaces.Base;
 using App.Domain.Models;
+using App.Service.Interface;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 
 namespace App.Service.Managers
 {
-    public class ShopManager
+    public class ShopManager: IShopManager
     {
         private readonly IBaseRepository<Shop> _shopRepo;
         private readonly IBaseRepository<Company> _companyRepo;

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace App.Infrastructure.Repositories
 {
-    public class PaymentMethodRepository : BaseRepository<PaymentMethod>, IpaymentMethodRepository
+    public class PaymentMethodRepository : BaseRepository<PaymentMethod>, IPaymentMethodRepository
     {
         public PaymentMethodRepository(AppDbContext context) : base(context)
         {

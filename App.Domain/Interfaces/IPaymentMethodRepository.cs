@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace App.Domain.Interfaces
 {
-    public interface IpaymentMethodRepository : IBaseRepository<PaymentMethod>
+    public interface IPaymentMethodRepository : IBaseRepository<PaymentMethod>
     {
     }
 }

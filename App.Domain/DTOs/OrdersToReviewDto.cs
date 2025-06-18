@@ -18,7 +18,7 @@ namespace App.Domain.DTOs
         public string? Note { get; set; }
         public decimal? Amount { get; set; }
         public string? TrackingPassword { get; set; }
-        public string? ReceiptId { get; set; }
+        public bool? Status { get; set; }
         public DateTime? CreatedAt { get; set; }
     }
 

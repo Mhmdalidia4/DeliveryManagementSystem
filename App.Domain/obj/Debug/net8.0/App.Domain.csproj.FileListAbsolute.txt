@@ -1,6 +1,7 @@
 C:\Users\mad40\source\repos\App\App.Domain\bin\Debug\net8.0\App.Domain.deps.json
 C:\Users\mad40\source\repos\App\App.Domain\bin\Debug\net8.0\App.Domain.dll
 C:\Users\mad40\source\repos\App\App.Domain\bin\Debug\net8.0\App.Domain.pdb
+C:\Users\mad40\source\repos\App\App.Domain\obj\Debug\net8.0\App.Domain.csproj.AssemblyReference.cache
 C:\Users\mad40\source\repos\App\App.Domain\obj\Debug\net8.0\App.Domain.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\mad40\source\repos\App\App.Domain\obj\Debug\net8.0\App.Domain.AssemblyInfoInputs.cache
 C:\Users\mad40\source\repos\App\App.Domain\obj\Debug\net8.0\App.Domain.AssemblyInfo.cs

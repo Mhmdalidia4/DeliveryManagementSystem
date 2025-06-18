@@ -13,6 +13,9 @@ public partial class OrderArea
 
     public virtual Company Company { get; set; } = null!;
 
+    public decimal DeliveryFees { get; set; }  // Recommended type for currency
+
+
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     public virtual ICollection<OrdersToReview> OrdersToReviews { get; set; } = new List<OrdersToReview>();

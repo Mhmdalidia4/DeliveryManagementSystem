@@ -25,7 +25,7 @@ public partial class OrdersToReview
 
     public string? TrackingPassword { get; set; }
 
-    public string? ReceiptId { get; set; }
+    public bool? Status { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

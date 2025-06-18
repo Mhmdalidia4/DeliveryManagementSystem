@@ -4,10 +4,11 @@ using App.Domain.DTOs;
 using App.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using App.Domain.Interfaces.Base;
+using App.Service.Interface;
 
 namespace App.Service.Managers
 {
-    public class DriverManager
+    public class DriverManager:IDriverManager
     {
         private readonly IBaseRepository<Driver> _driverRepo;
         private readonly IBaseRepository<Company> _companyRepo;

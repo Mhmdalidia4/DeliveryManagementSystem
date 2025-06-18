@@ -1,5 +1,6 @@
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\appsettings.json
+C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\libman.json
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\App.Web.staticwebassets.runtime.json
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\App.Web.staticwebassets.endpoints.json
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\App.Web.exe
@@ -11,12 +12,15 @@ C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\AutoMapper.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Azure.Core.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Azure.Identity.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Humanizer.dll
+C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.AspNet.SignalR.Core.dll
+C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.AspNetCore.Connections.Abstractions.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography.Internal.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.UI.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.AspNetCore.Razor.Language.dll
+C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.AspNetCore.SignalR.Common.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Build.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Build.Framework.dll
@@ -49,11 +53,15 @@ C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.Co
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.DependencyModel.dll
+C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
+C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.Features.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.FileProviders.Embedded.dll
+C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.Identity.Core.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.Identity.Stores.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.Logging.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.ObjectPool.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Extensions.Primitives.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Identity.Client.dll
@@ -65,6 +73,8 @@ C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.IdentityModel
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.NET.StringTools.dll
+C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Owin.dll
+C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.Owin.Security.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.SqlServer.Server.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.VisualStudio.Web.CodeGeneration.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Microsoft.VisualStudio.Web.CodeGeneration.Core.dll
@@ -85,6 +95,7 @@ C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\NuGet.Packaging.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\NuGet.ProjectModel.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\NuGet.Protocol.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\NuGet.Versioning.dll
+C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\Owin.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\SQLitePCLRaw.batteries_v2.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\SQLitePCLRaw.core.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\SQLitePCLRaw.provider.e_sqlite3.dll
@@ -102,6 +113,7 @@ C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\System.Formats.Asn1.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\System.IO.Pipelines.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\System.Memory.Data.dll
+C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\System.Reflection.MetadataLoadContext.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\System.Runtime.Caching.dll
 C:\Users\mad40\source\repos\App\App.Web\bin\Debug\net8.0\System.Security.Cryptography.ProtectedData.dll

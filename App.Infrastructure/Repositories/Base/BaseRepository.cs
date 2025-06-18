@@ -1,20 +1,20 @@
 ﻿using App.Domain.Interfaces.Base;
 using Microsoft.EntityFrameworkCore;
-using App.Domain.Interfaces.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
+using App.Domain.Models;
+
 namespace App.Infrastructure.Repositories.Base
 {
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
-        protected readonly DbContext _context;
+        protected readonly AppDbContext _context;
         protected readonly DbSet<T> _dbSet;
 
-        public BaseRepository(DbContext context)
+        public BaseRepository(AppDbContext context) // ✅ FIXED HERE
         {
             _context = context;
             _dbSet = _context.Set<T>();

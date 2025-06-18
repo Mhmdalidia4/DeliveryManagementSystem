@@ -1,0 +1,132 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var roles = await UserManager.GetRolesAsync(user);
+    string role = roles.FirstOrDefault() ?? "User";
+    bool isAdmin = roles.Contains("admin");
+    bool isCompany = roles.Contains("company");
+    bool isDriver = roles.Contains("driver");
+    bool isShop = roles.Contains("shop");
+}
+
+<style>
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        background-color: #f8f9fa;
+        border-right: 1px solid #dee2e6;
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+        .sidebar .logo {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #0d6efd;
+        }
+
+        .sidebar .subtitle {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+    .user-box {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+        .user-box img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+        }
+
+        .user-box .role {
+            display: inline-block;
+            padding: 3px 10px;
+            font-size: 12px;
+            background-color: #e9f2ff;
+            color: #0d6efd;
+            border-radius: 12px;
+            margin-top: 5px;
+        }
+
+    .sidebar a {
+        display: block;
+        padding: 10px 15px;
+        margin-bottom: 5px;
+        color: #212529;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 15px;
+        transition: all 0.2s ease;
+    }
+
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #e2e6ea;
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+        }
+
+    .sidebar .footer {
+        font-size: 12px;
+        color: #adb5bd;
+        text-align: center;
+        margin-top: 30px;
+    }
+</style>
+
+<div class="sidebar">
+    <div class="logo">Dashboard</div>
+    <div class="subtitle">Management System</div>
+
+    <div class="user-box">
+        <img src="https://i.pravatar.cc/150?u=@user.Email" alt="user" />
+        <div class="fw-bold">@user.UserName</div>
+        <div class="role">@role</div>
+    </div>
+
+    @if (isCompany || isDriver || isShop)
+    {
+        <a asp-page="/Orders"><i class="bi bi-bag"></i> Orders</a>
+        <a asp-page="/PickupRequest"><i class="bi bi-truck"></i> Pickup Request</a>
+        <a asp-page="/Reports"><i class="bi bi-bar-chart-line"></i> Reports</a>
+        <a asp-page="/Profile"><i class="bi bi-person-circle"></i> Profile</a>
+    }
+
+    @if (isCompany)
+    {
+        <a asp-page="/Settings"><i class="bi bi-gear"></i> Settings</a>
+        <a asp-page="/Drivers"><i class="bi bi-person-vcard"></i> Drivers</a>
+        <a asp-page="/Shops"><i class="bi bi-shop"></i> Shops</a>
+        <a asp-page="/Feedback"><i class="bi bi-chat-left-text"></i> Feedback</a>
+    }
+
+    @if (isCompany || isShop)
+    {
+        <a asp-page="/OrdersToReview"><i class="bi bi-list-check"></i> Order Review</a>
+    }
+
+    @if (isAdmin)
+    {
+        <a asp-page="/Companies"><i class="bi bi-building"></i> Companies</a>
+        <a asp-page="/SystemLog"><i class="bi bi-journal-text"></i> System Logs</a>
+    }
+
+    <div class="footer">
+        &copy; 2025 Dashboard System<br />
+        Version 1.0.0
+    </div>
+</div>

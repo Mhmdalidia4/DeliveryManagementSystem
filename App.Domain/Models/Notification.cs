@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.SignalR;
 
 namespace App.Domain.Models;
 
-public partial class Notification
+public partial class Notification 
 {
     public int NotificationId { get; set; }
 

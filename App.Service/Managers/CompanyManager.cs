@@ -4,10 +4,10 @@ using App.Domain.Interfaces.Base;
 using App.Domain.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-
+using App.Service.Interface;
 namespace App.Service.Managers
 {
-    public class CompanyManager
+    public class CompanyManager:ICompanyManager
     {
         private readonly IBaseRepository<Company> _companyRepo;
         private readonly UserManager<IdentityUser> _userManager;
@@ -22,7 +22,16 @@ namespace App.Service.Managers
             _userManager = userManager;
             _mapper = mapper;
         }
+        public async Task<int> GetCompanyIdAsync(IdentityUser user)
+        {
+            var companies = await _companyRepo.FindAsync(c => c.UserId == user.Id);
+            var company = companies.FirstOrDefault();
 
+            if (company == null)
+                throw new KeyNotFoundException("No company found for the given user.");
+
+            return company.CompanyId;
+        }
         // 1. Get all companies (Admins only)
         public async Task<IEnumerable<CompanyDto>> GetAllCompaniesAsync(IdentityUser currentUser)
         {
