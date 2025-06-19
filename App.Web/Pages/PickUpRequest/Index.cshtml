@@ -172,7 +172,11 @@
             </button>
             <button class="btn btn-outline-success" onclick="exportData()">
                 <i class="bi bi-download"></i> Export
-            </button>            @if (isCompany || isShop)
+            </button>
+            <button class="btn btn-outline-info" onclick="testNotification()">
+                <i class="bi bi-bell"></i> Test Notification
+            </button>
+            @if (isCompany || isShop)
             {
                 <button id="btnAddPickup" class="btn btn-primary">
                     <i class="bi bi-plus-circle me-1"></i>Add Pickup Request
@@ -642,11 +646,29 @@
                 return "The requested resource was not found.";
             } else if (xhr.status === 401) {
                 return "Your session has expired. Please log in again.";
-            } else if (xhr.responseJSON?.message) {
-                return xhr.responseJSON.message;
+            } else if (xhr.responseJSON?.message) {                return xhr.responseJSON.message;
             } else {
                 return "An error occurred. Please try again.";
             }
+        }
+
+        // Test Notification Function
+        function testNotification() {
+            $.ajax({
+                url: '/Notifications/CreateTest',
+                type: 'POST',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        showSuccessAlert(response.message || 'Test notification sent!');
+                    }
+                },
+                error: function(xhr) {
+                    showErrorAlert('Failed to send test notification: ' + getErrorMessage(xhr));
+                }
+            });
         }
     </script>
 }

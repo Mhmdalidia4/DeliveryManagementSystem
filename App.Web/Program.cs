@@ -52,6 +52,7 @@ builder.Services.AddScoped<IPickUpRequestRepository, PickUpRequestRepository>();
 builder.Services.AddScoped<IOrderAreaRepository, OrderAreaRepository>();
 builder.Services.AddScoped<IOrderStatusRepository, OrderStatusRepository>();
 builder.Services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 
 // Managers
@@ -62,6 +63,7 @@ builder.Services.AddScoped<IFeedbackManager, FeedbackManager>();
 builder.Services.AddScoped<IOrderManager, OrderManager>();
 builder.Services.AddScoped<IOrderToReviewManager, OrderToReviewManager>();
 builder.Services.AddScoped<IPickUpRequestManager, PickUpRequestManager>();
+builder.Services.AddScoped<INotificationManager, NotificationManager>();
 builder.Services.AddScoped<ISettingsManager, SettingsManager>();
 builder.Services.AddScoped<CompanyManager>();
 
@@ -106,6 +108,9 @@ app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// SignalR Hub
+app.MapHub<App.Service.Hubs.NotificationHub>("/notificationHub");
 
 // -------------------- ROLE & USER SEEDING --------------------
 //using (var scope = app.Services.CreateScope())

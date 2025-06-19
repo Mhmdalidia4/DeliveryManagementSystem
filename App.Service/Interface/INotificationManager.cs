@@ -9,7 +9,13 @@ namespace App.Service.Interface
 {
     public interface INotificationManager
     {
+        Task<NotificationDto> CreateAsync(NotificationDto dto);
         Task<NotificationDto> CreateAndSendAsync(NotificationDto dto, string userId);
         Task<IEnumerable<NotificationDto>> GetUserNotificationsAsync(string userId);
+        Task<IEnumerable<NotificationDto>> GetAllByUserAsync(string userId);
+        Task<IEnumerable<NotificationDto>> GetUnreadByUserAsync(string userId);
+        Task MarkAsReadAsync(int notificationId, string userId);
+        Task MarkAllAsReadAsync(string userId);
+        Task DeleteAsync(int notificationId, string userId);
     }
 }

@@ -193,9 +193,7 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.OrderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Feedback__OrderI__6754599E");
-        });
-
-        modelBuilder.Entity<Notification>(entity =>
+        });        modelBuilder.Entity<Notification>(entity =>
         {
             entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E1228D80A5F");
 
@@ -203,6 +201,8 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Message).HasMaxLength(500);
+            entity.Property(e => e.Title).HasMaxLength(255);
+            entity.Property(e => e.Type).HasMaxLength(50);
             entity.Property(e => e.UserId).HasMaxLength(450);
         });
 
