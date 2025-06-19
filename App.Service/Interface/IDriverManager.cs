@@ -16,5 +16,6 @@ namespace App.Service.Interface
         Task EditDriverAsync(DriverDto driverDto, IdentityUser currentUser);
         Task DeleteDriverAsync(int driverId, IdentityUser currentUser);
         Task<DriverDto?> GetDriverByIdAsync(int driverId, IdentityUser currentUser);
+        Task<DriverDto?> GetDriverByUserIdAsync(string userId);
     }
 }

@@ -47,12 +47,11 @@ namespace App.Service.AutoMapper
             CreateMap<OrdersToReview, OrdersToReviewDto>().ReverseMap();
 
             // PickupRequest → DTO
-            CreateMap<PickUpRequest, PickupRequestDto>().ReverseMap();
-
-            // PickupRequest → ViewModel (for display purposes)
+            CreateMap<PickUpRequest, PickupRequestDto>().ReverseMap();            // PickupRequest → ViewModel (for display purposes)
             CreateMap<PickupRequestDto, PickUpRequestViewModel>()
-    .ForMember(dest => dest.ShopName, opt => opt.MapFrom<ShopNameResolver>())
-    .ForMember(dest => dest.DriverName, opt => opt.MapFrom<DriverNameResolver>());
+                .ForMember(dest => dest.AssignedDriverId, opt => opt.MapFrom(src => src.AssignedDriverId))
+                .ForMember(dest => dest.ShopName, opt => opt.MapFrom<ShopNameResolver>())
+                .ForMember(dest => dest.DriverName, opt => opt.MapFrom<DriverNameResolver>());
         }
     }
 }

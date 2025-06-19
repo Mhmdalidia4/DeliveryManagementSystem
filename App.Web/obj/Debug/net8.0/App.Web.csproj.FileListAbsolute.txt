@@ -653,6 +653,7 @@ C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\bin\Debug\net8.
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\bin\Debug\net8.0\App.Service.pdb
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\bin\Debug\net8.0\App.Domain.pdb
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\App.Web.csproj.AssemblyReference.cache
+C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\rpswa.dswa.cache.json
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\App.Web.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\App.Web.AssemblyInfoInputs.cache
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\App.Web.AssemblyInfo.cs
@@ -662,10 +663,14 @@ C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\App.Web.RazorAssemblyInfo.cache
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\App.Web.RazorAssemblyInfo.cs
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\App.Web.sourcelink.json
+C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\rjimswa.dswa.cache.json
+C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
+C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\scopedcss\bundle\App.Web.styles.css
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\scopedcss\projectbundle\App.Web.bundle.scp.css
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\staticwebassets.build.json.cache
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\App.Web.csproj.Up2Date
@@ -674,8 +679,3 @@ C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\App.Web.pdb
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\App.Web.genruntimeconfig.cache
 C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\ref\App.Web.dll
-C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\rpswa.dswa.cache.json
-C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\rjimswa.dswa.cache.json
-C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
-C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
-C:\Users\mad40\OneDrive\Desktop\DeliveryManagementSystem\App.Web\obj\Debug\net8.0\staticwebassets.build.json.cache

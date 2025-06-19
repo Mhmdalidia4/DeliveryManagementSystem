@@ -16,5 +16,6 @@ namespace App.Service.Interface
         Task DeleteAsync(int requestId, IdentityUser currentUser);
         Task AssignDriverAsync(int requestId, int driverId, IdentityUser currentUser);
         Task UnassignDriverAsync(int requestId, IdentityUser currentUser);
+        Task UpdateAsync(PickupRequestDto dto, IdentityUser currentUser);
     }
 }

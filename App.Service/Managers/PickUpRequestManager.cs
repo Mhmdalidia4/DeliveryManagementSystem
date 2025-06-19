@@ -5,6 +5,7 @@ using App.Domain.Models;
 using App.Service.Interface;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using System.Diagnostics;
 
 namespace App.Service.Managers
 {
@@ -166,6 +167,56 @@ namespace App.Service.Managers
                 throw new UnauthorizedAccessException();
 
             entity.AssignedDriverId = null;
+            await _pickUpRequestRepo.UpdateAsync(entity);
+        }        public async Task UpdateAsync(PickupRequestDto dto, IdentityUser currentUser)
+        {            var entity = await _pickUpRequestRepo.GetByIdAsync(dto.PickupRequestId);
+            if (entity == null) throw new KeyNotFoundException("Pickup request not found");
+
+            // Check user roles
+            var isCompany = await _userManager.IsInRoleAsync(currentUser, "company");
+            var isDriver = await _userManager.IsInRoleAsync(currentUser, "driver");
+            
+            if (!isCompany && !isDriver)
+                throw new UnauthorizedAccessException("Only company users and drivers can update pickup requests.");
+
+            if (isCompany)
+            {
+                // Company validation - can update its own pickup requests
+                var company = (await _companyRepo.FindAsync(c => c.UserId == currentUser.Id)).FirstOrDefault();
+                if (company == null || entity.CompanyId != company.CompanyId)
+                    throw new UnauthorizedAccessException("Company can only update its own pickup requests.");
+
+                // Validate the driver (if provided) belongs to the company
+                if (dto.AssignedDriverId.HasValue)
+                {
+                    var driver = await _driverRepo.GetByIdAsync(dto.AssignedDriverId.Value);
+                    if (driver == null || driver.CompanyId != company.CompanyId)
+                        throw new UnauthorizedAccessException("Company can only assign its own drivers.");
+                }
+                
+                // Company can update driver assignment and completion status
+                entity.AssignedDriverId = dto.AssignedDriverId; // Can be null to unassign
+                entity.IsCompleted = dto.IsCompleted; // Update completion status
+            }            else if (isDriver)
+            {
+                // Driver validation - can only update pickup requests assigned to them
+                var drivers = await _driverRepo.FindAsync(d => d.UserId == currentUser.Id);
+                var driverRecord = drivers.FirstOrDefault();
+                
+                if (driverRecord == null)
+                    throw new UnauthorizedAccessException("Driver record not found.");
+                    
+                if (entity.AssignedDriverId != driverRecord.DriverId)
+                    throw new UnauthorizedAccessException("Driver can only update pickup requests assigned to them.");
+                
+                // Drivers can only change status from pending to completed, not back to pending
+                if (entity.IsCompleted == true && dto.IsCompleted == false)
+                    throw new UnauthorizedAccessException("You cannot change the status back to pending once it's completed.");
+                  // Driver can only update completion status, not driver assignment
+                entity.IsCompleted = dto.IsCompleted; // Only update completion status
+                // Keep existing driver assignment - don't change it
+            }
+            
             await _pickUpRequestRepo.UpdateAsync(entity);
         }
     }

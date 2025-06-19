@@ -1,62 +1,56 @@
 ﻿@model App.Web.ViewModels.AddPickUpRequestViewModel
 
-<form id="addPickupForm">
+<form id="addPickupForm" method="post">
     @Html.AntiForgeryToken()
+    
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+    
     <div class="mb-3">
-        <label asp-for="SelectedShopId" class="form-label">Shop</label>
-        <select asp-for="SelectedShopId" asp-items="Model.ShopOptions" class="form-select">
+        <label for="SelectedShopId" class="form-label">Shop <span class="text-danger">*</span></label>
+        <select id="SelectedShopId" name="AddPickUpRequestModel.SelectedShopId" class="form-select" required>
             <option value="">-- Select Shop --</option>
+            @if (Model?.ShopOptions != null)
+            {
+                @foreach (var shop in Model.ShopOptions)
+                {
+                    <option value="@shop.Value" @(shop.Value == Model.SelectedShopId?.ToString() ? "selected" : "")>@shop.Text</option>
+                }
+            }
         </select>
-        <span asp-validation-for="SelectedShopId" class="text-danger"></span>
+        <div class="invalid-feedback">Please select a shop.</div>
     </div>
+    
     <div class="mb-3">
-        <label asp-for="SelectedDriverId" class="form-label">Driver (Optional)</label>
-        <select asp-for="SelectedDriverId" asp-items="Model.DriverOptions" class="form-select">
+        <label for="SelectedDriverId" class="form-label">Driver (Optional)</label>
+        <select id="SelectedDriverId" name="AddPickUpRequestModel.SelectedDriverId" class="form-select">
             <option value="">-- Select Driver (Optional) --</option>
+            @if (Model?.DriverOptions != null)
+            {
+                @foreach (var driver in Model.DriverOptions)
+                {
+                    <option value="@driver.Value" @(driver.Value == Model.SelectedDriverId?.ToString() ? "selected" : "")>@driver.Text</option>
+                }
+            }
         </select>
-        <span asp-validation-for="SelectedDriverId" class="text-danger"></span>
+        <small class="text-muted">Leave empty to assign later</small>
     </div>
     
-    <button type="submit" class="btn btn-primary">Create</button>
-    
+    <div class="modal-footer border-0 px-0 pb-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x-lg me-1"></i>Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>Create Pickup Request
+        </button>
+    </div>
 </form>
-
-@section Scripts {
-    <script>
-        $(function () {
-            $('#addPickupForm').submit(function (e) {
-                e.preventDefault();
-                
-                // Clear previous errors
-                $('.text-danger').text('');
-                
-                var formData = $(this).serialize();
-                var token = $('input[name="__RequestVerificationToken"]').val();
-                
-                $.ajax({
-                    url: '/PickUpRequest/Index?handler=Add',
-                    type: 'POST',
-                    data: formData,
-                    headers: {
-                        'RequestVerificationToken': token
-                    },
-                    success: function (response) {
-                        if (response.created) {
-                            $('#addModal').modal('hide');
-                            location.reload();
-                        } else {
-                            // Update the modal body with the new content (which may include errors)
-                            $('#modalBody').html(response);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error:", xhr.responseText);
-                        console.error("Status:", status);
-                        console.error("Error details:", error);
-                        alert("An error occurred while creating the pickup request: " + (xhr.responseJSON?.message || error));
-                    }
-                });
-            });
-        });
-    </script>
-}

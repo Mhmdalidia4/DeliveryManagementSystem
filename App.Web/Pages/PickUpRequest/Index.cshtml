@@ -13,6 +13,7 @@
     bool isShop = roles.Contains("shop");
     bool isDriver = roles.Contains("driver");
     bool isAdmin = roles.Contains("admin");
+    var currentDriverId = ViewData["CurrentDriverId"] as int?;
     Layout = "_Layout";
 }
 
@@ -89,22 +90,74 @@
 
     .action-buttons .btn {
         margin-left: 10px;
+    }    .action-btns .btn {
+        margin-right: 5px;
     }
 
-    .action-btns .btn {
-        margin-right: 5px;
+    .filter-panel {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .export-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .filter-active {
+        background-color: #0d6efd !important;
+        color: white !important;
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 40px;
+        color: #6c757d;
     }
 </style>
 
 <div class="sidebar">
     @await Html.PartialAsync("_Dashboard")
 </div>
-<!-- Add this at the bottom of your main page -->
-<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+<!-- Add Pickup Request Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">Add Pickup Request</h5></div>
-            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">
+                    <i class="bi bi-plus-circle me-2"></i>Add Pickup Request
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="addModalBody">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Pickup Request Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">
+                    <i class="bi bi-pencil-square me-2"></i>Edit Pickup Request
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="editModalBody">
+                <!-- Content will be loaded here -->
+            </div>
         </div>
     </div>
 </div>
@@ -112,239 +165,488 @@
 
 
 <div class="main-content"> 
-    @Html.AntiForgeryToken()
-
-    <div class="page-header">
+    @Html.AntiForgeryToken()    <div class="page-header">
         <h2 class="fw-bold">PickUpRequests</h2>        <div class="action-buttons">
-            <button class="btn btn-secondary">Filter</button>
-            <button class="btn btn-outline-success">Export</button>
-            <button id="btnDebugData" class="btn btn-warning">Debug Data</button>
-            <button id="btnDebugModal" class="btn btn-info">Debug Modal</button>
-            @if (isCompany || isShop)
+            <button class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#filterPanel" aria-expanded="false">
+                <i class="bi bi-funnel"></i> Filter
+            </button>
+            <button class="btn btn-outline-success" onclick="exportData()">
+                <i class="bi bi-download"></i> Export
+            </button>            @if (isCompany || isShop)
             {
-                <button id="btnAddPickup" class="btn btn-primary">Add</button>
+                <button id="btnAddPickup" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i>Add Pickup Request
+                </button>
             }
         </div>
     </div>
 
-    <table class="table table-hover table-bordered shadow-sm">
-        <thead class="table-light">
-            <tr>
-                <th>PickUpRequestID</th>
-                <th>ShopName</th>
-                <th>RequestedAt</th>
-                <th>Driver</th>
-                <th>Status</th>
-                <th style="width: 140px;">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var request in Model.PickupRequests)
-            {
+    <!-- Filter Panel -->
+    <div class="collapse mb-3" id="filterPanel">
+        <div class="card">
+            <div class="card-body">
+                <form id="filterForm">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="statusFilter" class="form-label">Status</label>
+                            <select class="form-select" id="statusFilter">
+                                <option value="">All</option>
+                                <option value="completed">Completed</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="shopFilter" class="form-label">Shop</label>
+                            <input type="text" class="form-control" id="shopFilter" placeholder="Search by shop name...">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="driverFilter" class="form-label">Driver</label>
+                            <input type="text" class="form-control" id="driverFilter" placeholder="Search by driver name...">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="dateFromFilter" class="form-label">Date From</label>
+                            <input type="date" class="form-control" id="dateFromFilter">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="dateToFilter" class="form-label">Date To</label>
+                            <input type="date" class="form-control" id="dateToFilter">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="button" class="btn btn-primary me-2" onclick="applyFilters()">Apply</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="clearFilters()">Clear</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>    <div class="table-container">
+        <table class="table table-hover table-bordered shadow-sm" id="pickupRequestsTable">
+            <thead class="table-light">
                 <tr>
-                    <td>@request.PickupRequestId</td>
-                    <td>@request.ShopName</td>
-                    <td>@request.RequestedAt?.ToString("MMM dd, yyyy")</td>
-                    <td>@request.DriverName</td>
-                    <td>
-                        @if (request.IsCompleted == true)
-                        {
-                            <span class="badge bg-success">Completed</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-warning text-dark">Pending</span>
-                        }
-                    </td>
-                    <td class="action-btns">
-                        <a class="btn btn-sm btn-outline-primary" asp-page="/PickUpRequest/Edit" asp-route-id="@request.PickupRequestId">Edit</a>
-                        @if (isCompany || isShop)
-                        {                        <button class="btn btn-sm btn-outline-danger"
-                                onclick="deletePickupRequest(@request.PickupRequestId, @((request.IsCompleted ?? false).ToString().ToLower()))"
-                                @(isShop && (request.IsCompleted ?? false) ? "disabled" : "")>
-                                Delete
-                            </button>
-                        }
-                    </td>
+                    <th>PickUpRequestID</th>
+                    <th>ShopName</th>
+                    <th>RequestedAt</th>
+                    <th>Driver</th>
+                    <th>Status</th>
+                    <th style="width: 140px;">Action</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var request in Model.PickupRequests)
+                {
+                    <tr data-status="@(request.IsCompleted == true ? "completed" : "pending")"
+                        data-shop="@request.ShopName?.ToLower()"
+                        data-driver="@request.DriverName?.ToLower()"
+                        data-date="@request.RequestedAt?.ToString("yyyy-MM-dd")">
+                        <td>@request.PickupRequestId</td>
+                        <td>@request.ShopName</td>
+                        <td>@request.RequestedAt?.ToString("MMM dd, yyyy")</td>
+                        <td>@request.DriverName</td>
+                        <td>
+                            @if (request.IsCompleted == true)
+                            {
+                                <span class="badge bg-success">Completed</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            }
+                        </td>                        <td class="action-btns">
+                            @if (isCompany || (isDriver && request.AssignedDriverId == currentDriverId))
+                            {
+                                <button class="btn btn-sm btn-outline-primary" onclick="openEditModal(@request.PickupRequestId)">
+                                    <i class="bi bi-pencil me-1"></i>Edit
+                                </button>
+                            }
+                            @if (isCompany || isShop)
+                            {                        
+                                <button class="btn btn-sm btn-outline-danger"
+                                        onclick="confirmDelete(@request.PickupRequestId, @((request.IsCompleted ?? false).ToString().ToLower()))"
+                                        @(isShop && (request.IsCompleted ?? false) ? "disabled" : "")>
+                                    <i class="bi bi-trash me-1"></i>Delete
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+          <!-- No results message (initially hidden) -->
+        <div id="noResultsMessage" class="no-results" style="display: none;">
+            <i class="bi bi-search" style="font-size: 2rem;"></i>
+            <h5>No pickup requests found</h5>
+            <p>Try adjusting your filter criteria.</p>
+        </div>
+    </div>
 </div>
-@section Scripts {    <script>
-        $(document).ready(function () {            $('#btnAddPickup').click(function () {
-                console.log('Add button clicked');
-                $.get('/PickUpRequest/Index?handler=LoadAddForm', function (response) {
-                    console.log('LoadAddForm response type:', typeof response);
-                    console.log('LoadAddForm response:', response);
-                    
-                    if (response.created) {
-                        alert("Pickup Request created successfully!");
-                        location.reload();
-                    } else {
-                        console.log('Loading modal with response');
-                        $('#modalBody').html(response);
-                        $('#addModal').modal('show');
-                        
-                        // Debug: Check if dropdowns have options after loading
-                        setTimeout(function() {
-                            var shopOptions = $('#modalBody select[name="SelectedShopId"] option').length;
-                            var driverOptions = $('#modalBody select[name="SelectedDriverId"] option').length;
-                            console.log('Shop dropdown options count:', shopOptions);
-                            console.log('Driver dropdown options count:', driverOptions);
-                            
-                            // Log the actual options
-                            $('#modalBody select[name="SelectedShopId"] option').each(function(i, option) {
-                                console.log('Shop option ' + i + ':', $(option).val(), $(option).text());
-                            });
-                            
-                            $('#modalBody select[name="SelectedDriverId"] option').each(function(i, option) {
-                                console.log('Driver option ' + i + ':', $(option).val(), $(option).text());
-                            });
-                        }, 100);
-                    }
-                }).fail(function(xhr, status, error) {
-                    console.error("Error loading add form:", xhr.responseText);
-                    console.error("Status:", status, "Error:", error);
-                    alert("Error loading the form. Please try again.");
-                });
-            });
-              $('#btnDebugData').click(function () {
-                $.get('/PickUpRequest/Index?handler=DebugData', function (response) {
-                    console.log('Debug Data Response:', response);
-                    
-                    // First, let's see the raw response structure
-                    console.log('Response structure:', JSON.stringify(response, null, 2));
-                    
-                    if (response.success) {
-                        var message = `Debug Information:\n\n`;
-                        
-                        // Safely access user properties
-                        if (response.user) {
-                            message += `User ID: ${response.user.UserId || 'N/A'}\n`;
-                            message += `User Email: ${response.user.UserEmail || 'N/A'}\n`;
-                            message += `User Roles: ${response.user.UserRoles ? response.user.UserRoles.join(', ') : 'N/A'}\n`;
-                            message += `Is Company: ${response.user.IsCompany || false}\n\n`;
-                        } else {
-                            message += `User information not available\n\n`;
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // Filter functionality
+        function applyFilters() {
+            const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+            const shopFilter = document.getElementById('shopFilter').value.toLowerCase();
+            const driverFilter = document.getElementById('driverFilter').value.toLowerCase();
+            const dateFromFilter = document.getElementById('dateFromFilter').value;
+            const dateToFilter = document.getElementById('dateToFilter').value;
+
+            const table = document.getElementById('pickupRequestsTable');
+            const rows = table.querySelectorAll('tbody tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                let show = true;
+
+                // Status filter
+                if (statusFilter && row.dataset.status !== statusFilter) {
+                    show = false;
+                }
+
+                // Shop filter
+                if (shopFilter && (!row.dataset.shop || !row.dataset.shop.includes(shopFilter))) {
+                    show = false;
+                }
+
+                // Driver filter
+                if (driverFilter && (!row.dataset.driver || !row.dataset.driver.includes(driverFilter))) {
+                    show = false;
+                }
+
+                // Date range filter
+                if (dateFromFilter || dateToFilter) {
+                    const rowDate = row.dataset.date;
+                    if (rowDate) {
+                        if (dateFromFilter && rowDate < dateFromFilter) {
+                            show = false;
                         }
-                        
-                        if (response.companyId) {
-                            message += `Company ID: ${response.companyId}\n`;
-                            message += `Shops Count: ${response.shopsCount || 0}\n`;
-                            message += `Drivers Count: ${response.driversCount || 0}\n\n`;
-                            
-                            if (response.shops && response.shops.length > 0) {
-                                message += `Shops:\n`;
-                                response.shops.forEach(shop => {
-                                    message += `  - ID: ${shop.ShopId}, Name: "${shop.Name}", CompanyId: ${shop.CompanyId}\n`;
-                                });
-                                message += `\n`;
-                            } else {
-                                message += `No shops found\n\n`;
-                            }
-                            
-                            if (response.drivers && response.drivers.length > 0) {
-                                message += `Drivers:\n`;
-                                response.drivers.forEach(driver => {
-                                    message += `  - ID: ${driver.DriverId}, Name: "${driver.Name}", CompanyId: ${driver.CompanyId}\n`;
-                                });
-                            } else {
-                                message += `No drivers found\n`;
-                            }
-                        } else if (response.message) {
-                            message += response.message;
-                        } else {
-                            message += `No company ID found for user`;
+                        if (dateToFilter && rowDate > dateToFilter) {
+                            show = false;
                         }
-                        
-                        alert(message);
-                    } else {
-                        var errorMessage = `Debug Error: ${response.error || 'Unknown error'}\n\nCheck console for details.`;
-                        alert(errorMessage);
-                        console.error('Debug Error Details:', response);
                     }
-                }).fail(function(xhr, status, error) {
-                    console.error("Error calling debug:", xhr.responseText);
-                    console.error("Status:", status, "Error:", error);
-                    alert("Error calling debug method. Check console for details.");                });
+                }
+
+                row.style.display = show ? '' : 'none';
+                if (show) visibleCount++;
             });
+
+            // Show/hide no results message
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            const tableElement = document.getElementById('pickupRequestsTable');
             
-            $('#btnDebugModal').click(function () {
-                console.log('Debug Modal button clicked');
-                $.get('/PickUpRequest/Index?handler=LoadAddForm', function (response) {
-                    console.log('Modal response received');
-                    console.log('Response type:', typeof response);
-                    console.log('Response content (first 500 chars):', response.substring(0, 500));
-                    
-                    // Create a temporary div to parse the HTML
-                    var tempDiv = $('<div>').html(response);
-                    
-                    // Find the select elements
-                    var shopSelect = tempDiv.find('select[name="SelectedShopId"]');
-                    var driverSelect = tempDiv.find('select[name="SelectedDriverId"]');
-                    
-                    console.log('Found shop select:', shopSelect.length > 0);
-                    console.log('Found driver select:', driverSelect.length > 0);
-                    
-                    if (shopSelect.length > 0) {
-                        console.log('Shop select HTML:', shopSelect.prop('outerHTML'));
-                        console.log('Shop options count:', shopSelect.find('option').length);
-                        shopSelect.find('option').each(function(i, opt) {
-                            console.log('Shop option ' + i + ':', $(opt).val(), $(opt).text());
-                        });
-                    }
-                    
-                    if (driverSelect.length > 0) {
-                        console.log('Driver select HTML:', driverSelect.prop('outerHTML'));
-                        console.log('Driver options count:', driverSelect.find('option').length);
-                        driverSelect.find('option').each(function(i, opt) {
-                            console.log('Driver option ' + i + ':', $(opt).val(), $(opt).text());
-                        });
-                    }
-                    
-                    alert('Modal debug complete. Check console for detailed output.');
-                    
-                }).fail(function(xhr, status, error) {
-                    console.error("Error loading add form for debug:", xhr.responseText);
-                    alert("Error loading the form for debug. Check console.");
-                });
+            if (visibleCount === 0) {
+                tableElement.style.display = 'none';
+                noResultsMessage.style.display = 'block';
+            } else {
+                tableElement.style.display = '';
+                noResultsMessage.style.display = 'none';
+            }
+
+            // Update filter button appearance
+            const filterBtn = document.querySelector('[data-bs-target="#filterPanel"]');
+            const hasActiveFilters = statusFilter || shopFilter || driverFilter || dateFromFilter || dateToFilter;
+            
+            if (hasActiveFilters) {
+                filterBtn.classList.add('filter-active');
+            } else {
+                filterBtn.classList.remove('filter-active');
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('shopFilter').value = '';
+            document.getElementById('driverFilter').value = '';
+            document.getElementById('dateFromFilter').value = '';
+            document.getElementById('dateToFilter').value = '';
+            
+            applyFilters();
+        }
+
+        // Export functionality
+        function exportData() {
+            const table = document.getElementById('pickupRequestsTable');
+            const rows = Array.from(table.querySelectorAll('tbody tr')).filter(row => row.style.display !== 'none');
+            
+            if (rows.length === 0) {
+                alert('No data to export. Please adjust your filters.');
+                return;
+            }
+
+            const data = [];
+            const headers = ['PickUp Request ID', 'Shop Name', 'Requested At', 'Driver', 'Status'];
+            data.push(headers);
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const rowData = [
+                    cells[0].textContent.trim(), // ID
+                    cells[1].textContent.trim(), // Shop Name
+                    cells[2].textContent.trim(), // Requested At
+                    cells[3].textContent.trim(), // Driver
+                    cells[4].textContent.trim()  // Status
+                ];
+                data.push(rowData);
+            });
+
+            // Create workbook and worksheet
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+
+            // Set column widths
+            ws['!cols'] = [
+                { wch: 15 }, // ID
+                { wch: 25 }, // Shop Name
+                { wch: 15 }, // Requested At
+                { wch: 20 }, // Driver
+                { wch: 12 }  // Status
+            ];
+
+            XLSX.utils.book_append_sheet(wb, ws, 'PickUp Requests');
+
+            // Generate filename with current date
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const filename = `pickup-requests-${dateStr}.xlsx`;
+
+            XLSX.writeFile(wb, filename);
+        }
+
+        // Initialize filters on page load
+        $(document).ready(function () {
+            // Add event listeners for real-time filtering
+            $('#statusFilter, #shopFilter, #driverFilter, #dateFromFilter, #dateToFilter').on('input change', function() {
+                applyFilters();
             });
         });
-    </script><script>
-        function deletePickupRequest(id, isCompleted) {
-            // For shop users, prevent delete if completed
-            var isCompany = '@isCompany'.toLowerCase() === 'true';
-            var isShop = '@isShop'.toLowerCase() === 'true';
+    </script>
+      <script>
+        // Global variables
+        const isCompany = '@isCompany'.toLowerCase() === 'true';
+        const isShop = '@isShop'.toLowerCase() === 'true';
+        const isDriver = '@isDriver'.toLowerCase() === 'true';
+
+        $(document).ready(function () {
+            // Add button click handler
+            $('#btnAddPickup').click(function () {
+                openAddModal();
+            });
+
+            // Add event listeners for real-time filtering
+            $('#statusFilter, #shopFilter, #driverFilter, #dateFromFilter, #dateToFilter').on('input change', function() {
+                applyFilters();
+            });
+        });
+
+        // Add Modal Functions
+        function openAddModal() {
+            showLoading('#addModalBody');
+            $('#addModal').modal('show');
             
+            $.get('/PickUpRequest/Index?handler=LoadAddForm')
+                .done(function (response) {
+                    if (response.created) {
+                        // Shop user case - request created immediately
+                        showSuccessAlert("Pickup Request created successfully!");
+                        $('#addModal').modal('hide');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        // Company user case - show form
+                        $('#addModalBody').html(response);
+                        bindAddFormEvents();
+                    }
+                })
+                .fail(function(xhr) {
+                    showErrorInModal('#addModalBody', getErrorMessage(xhr));
+                });
+        }
+
+        function bindAddFormEvents() {
+            // Remove existing handlers to prevent double binding
+            $('#addPickupForm').off('submit').on('submit', function (e) {
+                e.preventDefault();
+                submitAddForm();
+            });
+        }
+
+        function submitAddForm() {
+            const form = $('#addPickupForm')[0];
+            const formData = new FormData(form);
+            const $submitBtn = $('#addPickupForm button[type="submit"]');
+            
+            // Show loading state
+            $submitBtn.prop('disabled', true).html('<i class="bi bi-hourglass-split me-1"></i>Creating...');
+            
+            $.ajax({
+                url: '/PickUpRequest/Index?handler=Add',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                }
+            })
+            .done(function (response) {
+                if (response.created) {
+                    $('#addModal').modal('hide');
+                    showSuccessAlert('Pickup request created successfully!');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    // Update modal with form errors
+                    $('#addModalBody').html(response);
+                    bindAddFormEvents();
+                }
+            })
+            .fail(function (xhr) {
+                showErrorInModal('#addModalBody', getErrorMessage(xhr));
+                $submitBtn.prop('disabled', false).html('<i class="bi bi-plus-circle me-1"></i>Create Pickup Request');
+            });
+        }        // Edit Modal Functions
+        function openEditModal(id) {
+            console.log('Opening edit modal for ID:', id);
+            showLoading('#editModalBody');
+            $('#editModal').modal('show');
+            
+            $.get('/PickUpRequest/Index?handler=LoadEditForm&id=' + id)
+                .done(function (response) {
+                    console.log('Edit form loaded successfully');
+                    $('#editModalBody').html(response);
+                    bindEditFormEvents();
+                })
+                .fail(function(xhr) {
+                    console.error('Failed to load edit form:', xhr);
+                    showErrorInModal('#editModalBody', getErrorMessage(xhr));
+                });
+        }
+
+        function bindEditFormEvents() {
+            // Remove existing handlers to prevent double binding
+            $('#editPickupForm').off('submit').on('submit', function (e) {
+                e.preventDefault();
+                submitEditForm();
+            });
+        }
+
+        function submitEditForm() {
+            const form = $('#editPickupForm')[0];
+            const formData = new FormData(form);
+            const $submitBtn = $('#editPickupForm button[type="submit"]');
+            
+            // Show loading state
+            $submitBtn.prop('disabled', true).html('<i class="bi bi-hourglass-split me-1"></i>Updating...');
+            
+            $.ajax({
+                url: '/PickUpRequest/Index?handler=Edit',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                }
+            })
+            .done(function (response) {
+                if (response.updated) {
+                    $('#editModal').modal('hide');
+                    showSuccessAlert('Pickup request updated successfully!');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    // Update modal with form errors
+                    $('#editModalBody').html(response);
+                    bindEditFormEvents();
+                }
+            })
+            .fail(function (xhr) {
+                showErrorInModal('#editModalBody', getErrorMessage(xhr));
+                $submitBtn.prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i>Update');
+            });
+        }
+
+        // Delete Functions
+        function confirmDelete(id, isCompleted) {
+            // For shop users, prevent delete if completed
             if (isShop && isCompleted === true) {
-                alert("You cannot delete a completed pickup request.");
+                showErrorAlert("You cannot delete a completed pickup request.");
                 return;
             }
 
             if (confirm("Are you sure you want to delete this pickup request?")) {
-                var token = $('input[name="__RequestVerificationToken"]').val();
-                
-                $.ajax({
-                    url: '/PickUpRequest/Index?handler=Delete&id=' + id,
-                    type: 'POST',
-                    headers: {
-                        "RequestVerificationToken": token
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            location.reload();
-                        } else {
-                            alert(response.message || "Delete failed.");
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error:", xhr.responseText);
-                        alert("An error occurred while deleting: " + (xhr.responseJSON?.message || error));
-                    }
-                });
+                deletePickupRequest(id);
+            }
+        }
+
+        function deletePickupRequest(id) {
+            $.ajax({
+                url: '/PickUpRequest/Index?handler=Delete&id=' + id,
+                type: 'POST',
+                headers: {
+                    "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                }
+            })
+            .done(function (response) {
+                if (response.success) {
+                    showSuccessAlert('Pickup request deleted successfully!');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showErrorAlert(response.message || "Delete failed.");
+                }
+            })
+            .fail(function (xhr) {
+                showErrorAlert(getErrorMessage(xhr));
+            });
+        }
+
+        // Utility Functions
+        function showLoading(selector) {
+            $(selector).html(`
+                <div class="d-flex justify-content-center p-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `);
+        }
+
+        function showErrorInModal(selector, message) {
+            $(selector).html(`
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle me-1"></i>${message}
+                </div>
+            `);
+        }
+
+        function showSuccessAlert(message) {
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle me-1"></i>${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+            $('.main-content').prepend(alertHtml);
+            setTimeout(() => $('.alert-success').alert('close'), 5000);
+        }
+
+        function showErrorAlert(message) {
+            const alertHtml = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle me-1"></i>${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+            $('.main-content').prepend(alertHtml);
+            setTimeout(() => $('.alert-danger').alert('close'), 8000);
+        }
+
+        function getErrorMessage(xhr) {
+            if (xhr.status === 403) {
+                return "You don't have permission to perform this action.";
+            } else if (xhr.status === 404) {
+                return "The requested resource was not found.";
+            } else if (xhr.status === 401) {
+                return "Your session has expired. Please log in again.";
+            } else if (xhr.responseJSON?.message) {
+                return xhr.responseJSON.message;
+            } else {
+                return "An error occurred. Please try again.";
             }
         }
     </script>
-
 }

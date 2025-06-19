@@ -148,6 +148,15 @@ namespace App.Service.Managers
             return driver?.Name;
         }
 
+        public async Task<DriverDto?> GetDriverByUserIdAsync(string userId)
+        {
+            var drivers = await _driverRepository.FindAsync(d => d.UserId == userId);
+            var driver = drivers.FirstOrDefault();
+            if (driver == null) return null;
+            
+            return _mapper.Map<DriverDto>(driver);
+        }
+
         
     }
 }

@@ -37,13 +37,25 @@ namespace App.Web.pages.PickUpRequest
 
         public List<PickUpRequestViewModel> PickupRequests { get; set; } = new();
 
-        public async Task<IActionResult> OnGetAsync()
+        [BindProperty]
+        public AddPickUpRequestViewModel AddPickUpRequestModel { get; set; } = new();
+
+        [BindProperty]
+        public EditPickUpRequestViewModel EditPickUpRequestModel { get; set; } = new();        public async Task<IActionResult> OnGetAsync()
         {
             ViewData["Title"] = "Pickup Requests";
 
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser == null)
                 return RedirectToPage("/Account/Login");
+
+            // Get driver ID if user is a driver
+            var isDriver = await _userManager.IsInRoleAsync(currentUser, "driver");
+            if (isDriver)
+            {
+                var driverRecord = await _driverManager.GetDriverByUserIdAsync(currentUser.Id);
+                ViewData["CurrentDriverId"] = driverRecord?.DriverId;
+            }
 
             var pickupDtos = await _pickupRequestManager.GetAllByUserAsync(currentUser);
             if (pickupDtos == null || !pickupDtos.Any())
@@ -55,7 +67,7 @@ namespace App.Web.pages.PickUpRequest
             PickupRequests = _mapper.Map<List<PickUpRequestViewModel>>(pickupDtos);
 
             return Page(); // ✅ Explicitly return the page
-        }        public async Task<IActionResult> OnGetLoadAddFormAsync()
+        }public async Task<IActionResult> OnGetLoadAddFormAsync()
         {
             try
             {
@@ -157,9 +169,7 @@ namespace App.Web.pages.PickUpRequest
                 Debug.WriteLine($"Stack trace: {ex.StackTrace}");
                 return BadRequest($"Error: {ex.Message}");
             }
-        }
-
-        public async Task<IActionResult> OnPostAddAsync(AddPickUpRequestViewModel model)
+        }        public async Task<IActionResult> OnPostAddAsync()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
@@ -169,19 +179,19 @@ namespace App.Web.pages.PickUpRequest
 
             try
             {
-                if (!model.SelectedShopId.HasValue)
+                if (!AddPickUpRequestModel.SelectedShopId.HasValue)
                 {
                     ModelState.AddModelError("", "Please select a shop.");
-                    return await ReloadAddFormWithErrors(model, user);
+                    return await ReloadAddFormWithErrors(AddPickUpRequestModel, user);
                 }
 
                 var companyId = await _companyManager.GetCompanyIdAsync(user);
                 
                 var pickupDto = new PickupRequestDto
                 {
-                    ShopId = model.SelectedShopId.Value,
+                    ShopId = AddPickUpRequestModel.SelectedShopId.Value,
                     CompanyId = companyId,
-                    AssignedDriverId = model.SelectedDriverId,
+                    AssignedDriverId = AddPickUpRequestModel.SelectedDriverId,
                     RequestedAt = DateTime.Now,
                     IsCompleted = false
                 };
@@ -194,7 +204,7 @@ namespace App.Web.pages.PickUpRequest
             {
                 Debug.WriteLine($"Error creating pickup request: {ex}");
                 ModelState.AddModelError("", "An error occurred while creating the pickup request.");
-                return await ReloadAddFormWithErrors(model, user);
+                return await ReloadAddFormWithErrors(AddPickUpRequestModel, user);
             }
         }
 
@@ -335,7 +345,259 @@ namespace App.Web.pages.PickUpRequest
                     stackTrace = ex.StackTrace
                 });
             }
-        }
+        }        public async Task<IActionResult> OnGetLoadEditFormAsync(int id)
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null) return Unauthorized();                var userRoles = await _userManager.GetRolesAsync(user);
+                
+                // More detailed debugging
+                System.Diagnostics.Debug.WriteLine($"DEBUG EDIT: User ID: {user.Id}");
+                System.Diagnostics.Debug.WriteLine($"DEBUG EDIT: User Email: {user.Email}");
+                System.Diagnostics.Debug.WriteLine($"DEBUG EDIT: UserRoles Count: {userRoles.Count}");
+                System.Diagnostics.Debug.WriteLine($"DEBUG EDIT: UserRoles: [{string.Join(", ", userRoles)}]");
+                
+                // Try multiple ways to check roles
+                var isCompany1 = userRoles.Any(r => r.Equals("company", StringComparison.OrdinalIgnoreCase));
+                var isDriver1 = userRoles.Any(r => r.Equals("driver", StringComparison.OrdinalIgnoreCase));
+                var isCompany2 = userRoles.Contains("company");
+                var isDriver2 = userRoles.Contains("driver");
+                var isCompany3 = await _userManager.IsInRoleAsync(user, "company");
+                var isDriver3 = await _userManager.IsInRoleAsync(user, "driver");
+                
+                System.Diagnostics.Debug.WriteLine($"DEBUG EDIT: IsCompany (Any/OrdinalIgnoreCase): {isCompany1}");
+                System.Diagnostics.Debug.WriteLine($"DEBUG EDIT: IsDriver (Any/OrdinalIgnoreCase): {isDriver1}");
+                System.Diagnostics.Debug.WriteLine($"DEBUG EDIT: IsCompany (Contains): {isCompany2}");
+                System.Diagnostics.Debug.WriteLine($"DEBUG EDIT: IsDriver (Contains): {isDriver2}");
+                System.Diagnostics.Debug.WriteLine($"DEBUG EDIT: IsCompany (IsInRoleAsync): {isCompany3}");
+                System.Diagnostics.Debug.WriteLine($"DEBUG EDIT: IsDriver (IsInRoleAsync): {isDriver3}");
+                
+                // Use the most reliable method
+                var isCompany = isCompany3;
+                var isDriver = isDriver3;
+                
+                if (!isCompany && !isDriver)
+                    return Forbid();
 
+                // Get the pickup request
+                var pickupRequests = await _pickupRequestManager.GetAllByUserAsync(user);
+                var pickup = pickupRequests.FirstOrDefault(r => r.PickupRequestId == id);
+                
+                if (pickup == null)
+                    return NotFound();
+
+                // For drivers, additional validation - they can only edit requests assigned to them
+                if (isDriver)
+                {
+                    if (pickup.AssignedDriverId == null)
+                        return Forbid(); // Not assigned to any driver
+                        
+                    var driverRecord = await _driverManager.GetDriverByUserIdAsync(user.Id);
+                    if (driverRecord == null || pickup.AssignedDriverId != driverRecord.DriverId)
+                        return Forbid(); // Not assigned to this driver
+                }
+
+                var viewModel = new EditPickUpRequestViewModel
+                {
+                    PickupRequestId = pickup.PickupRequestId,
+                    SelectedShopId = pickup.ShopId,
+                    SelectedDriverId = pickup.AssignedDriverId,
+                    RequestedAt = pickup.RequestedAt,
+                    IsCompleted = pickup.IsCompleted ?? false
+                };
+
+                // Only populate driver options for company users
+                if (isCompany)
+                {
+                    var companyId = await _companyManager.GetCompanyIdAsync(user);
+                    var shops = await _shopManager.GetAllShopsForCompanyUserAsync(companyId);
+                    var drivers = await _driverManager.GetAllDriversByCompanyAsync(companyId, user);
+
+                    viewModel.ShopOptions = shops.Select(s => new SelectListItem
+                    {
+                        Value = s.ShopId.ToString(),
+                        Text = s.Name
+                    }).ToList();
+
+                    viewModel.DriverOptions = drivers.Select(d => new SelectListItem
+                    {
+                        Value = d.DriverId.ToString(),
+                        Text = d.Name
+                    }).ToList();
+                }                else // isDriver
+                {
+                    var pickupShop = await _shopManager.GetShopEntityByIdAsync(pickup.ShopId);
+                    
+                    viewModel.ShopOptions = new List<SelectListItem>
+                    {
+                        new SelectListItem { Value = pickup.ShopId.ToString(), Text = pickupShop?.Name ?? "Unknown Shop" }
+                    };
+                    viewModel.DriverOptions = new List<SelectListItem>();
+                }                ViewData["IsCompany"] = isCompany;
+                ViewData["IsDriver"] = isDriver;
+                
+                System.Diagnostics.Debug.WriteLine($"DEBUG EDIT: Setting ViewData - IsCompany: {isCompany}, IsDriver: {isDriver}");
+                
+                return Partial("_EditPickUpRequestPartial", viewModel);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }        public async Task<IActionResult> OnPostEditAsync()
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null) return Unauthorized();
+
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var isCompany = userRoles.Any(r => r.Equals("company", StringComparison.OrdinalIgnoreCase));
+                var isDriver = userRoles.Any(r => r.Equals("driver", StringComparison.OrdinalIgnoreCase));
+                  if (!isCompany && !isDriver)
+                    return Forbid();                // Remove validation errors for shop selection since it's read-only in edit
+                if (ModelState.ContainsKey("EditPickUpRequestModel.SelectedShopId"))
+                {
+                    ModelState.Remove("EditPickUpRequestModel.SelectedShopId");
+                }                // Additional validation clearing for any shop-related errors
+                var keysToRemove = ModelState.Keys.Where(k => k.Contains("Shop")).ToList();
+                foreach (var key in keysToRemove)
+                {
+                    ModelState.Remove(key);
+                }
+
+                // Debug: Log the EditPickUpRequestModel values
+                System.Diagnostics.Debug.WriteLine($"EDIT DEBUG: PickupRequestId = {EditPickUpRequestModel?.PickupRequestId}");
+                System.Diagnostics.Debug.WriteLine($"EDIT DEBUG: SelectedShopId = {EditPickUpRequestModel?.SelectedShopId}");
+                System.Diagnostics.Debug.WriteLine($"EDIT DEBUG: SelectedDriverId = {EditPickUpRequestModel?.SelectedDriverId}");
+                System.Diagnostics.Debug.WriteLine($"EDIT DEBUG: IsCompleted = {EditPickUpRequestModel?.IsCompleted}");
+
+                if (!ModelState.IsValid)
+                {
+                    System.Diagnostics.Debug.WriteLine("EDIT DEBUG: ModelState is invalid:");
+                    foreach (var modelError in ModelState)
+                    {
+                        foreach (var error in modelError.Value.Errors)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"EDIT DEBUG: {modelError.Key}: {error.ErrorMessage}");
+                        }
+                    }
+                    return await ReloadEditFormWithErrors(EditPickUpRequestModel ?? new EditPickUpRequestViewModel(), user);
+                }
+
+                if (EditPickUpRequestModel == null)
+                {
+                    ModelState.AddModelError("", "Invalid request data.");
+                    return await ReloadEditFormWithErrors(new EditPickUpRequestViewModel(), user);
+                }
+
+                var pickupRequests = await _pickupRequestManager.GetAllByUserAsync(user);
+                var existingPickup = pickupRequests.FirstOrDefault(r => r.PickupRequestId == EditPickUpRequestModel.PickupRequestId);
+                
+                if (existingPickup == null)
+                    return NotFound();// For drivers, additional validation - they can only edit requests assigned to them
+                if (isDriver)
+                {                    if (existingPickup.AssignedDriverId == null)
+                    {
+                        ModelState.AddModelError("", "This pickup request is not assigned to any driver.");
+                        return await ReloadEditFormWithErrors(EditPickUpRequestModel, user);
+                    }
+                    
+                    // Get the driver record to verify the user is the assigned driver
+                    var driverRecord = await _driverManager.GetDriverByUserIdAsync(user.Id);                    if (driverRecord == null || existingPickup.AssignedDriverId != driverRecord.DriverId)
+                    {
+                        ModelState.AddModelError("", "You can only edit pickup requests assigned to you.");
+                        return await ReloadEditFormWithErrors(EditPickUpRequestModel, user);
+                    }
+                    
+                    // Drivers can only change status from pending to completed, not back to pending
+                    if (existingPickup.IsCompleted == true && EditPickUpRequestModel.IsCompleted == false)
+                    {
+                        ModelState.AddModelError("", "You cannot change the status back to pending once it's completed.");
+                        return await ReloadEditFormWithErrors(EditPickUpRequestModel, user);
+                    }
+                }                // Create update DTO with different logic for company vs driver
+                PickupRequestDto updateDto;
+                if (isCompany)
+                {
+                    // Company can update driver assignment and status
+                    updateDto = new PickupRequestDto
+                    {
+                        PickupRequestId = EditPickUpRequestModel.PickupRequestId,
+                        ShopId = existingPickup.ShopId, // Keep original shop
+                        CompanyId = existingPickup.CompanyId,
+                        AssignedDriverId = EditPickUpRequestModel.SelectedDriverId, // Can be null to remove driver
+                        RequestedAt = existingPickup.RequestedAt, // Keep original date
+                        IsCompleted = EditPickUpRequestModel.IsCompleted // Update completion status
+                    };
+                }else // isDriver
+                {
+                    // Driver can only update status, keep everything else the same
+                    updateDto = new PickupRequestDto
+                    {
+                        PickupRequestId = EditPickUpRequestModel.PickupRequestId,
+                        ShopId = existingPickup.ShopId, // Keep original shop
+                        CompanyId = existingPickup.CompanyId,
+                        AssignedDriverId = existingPickup.AssignedDriverId, // Keep original driver assignment
+                        RequestedAt = existingPickup.RequestedAt, // Keep original date
+                        IsCompleted = EditPickUpRequestModel.IsCompleted // Only update completion status
+                    };
+                }
+
+                await _pickupRequestManager.UpdateAsync(updateDto, user);
+
+                return new JsonResult(new { updated = true });
+            }            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error updating pickup request: {ex}");
+                ModelState.AddModelError("", "An error occurred while updating the pickup request.");
+                var userForReload = await _userManager.GetUserAsync(User);
+                if (userForReload == null) return Unauthorized();
+                return await ReloadEditFormWithErrors(EditPickUpRequestModel ?? new EditPickUpRequestViewModel(), userForReload);
+            }
+        }        private async Task<IActionResult> ReloadEditFormWithErrors(EditPickUpRequestViewModel model, IdentityUser user)
+        {
+            // Get user roles for consistency
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var isCompany = userRoles.Any(r => r.Equals("company", StringComparison.OrdinalIgnoreCase));
+            var isDriver = userRoles.Any(r => r.Equals("driver", StringComparison.OrdinalIgnoreCase));
+
+            // Only populate dropdown options for company users
+            if (isCompany)
+            {
+                var companyId = await _companyManager.GetCompanyIdAsync(user);
+                var shops = await _shopManager.GetAllShopsForCompanyUserAsync(companyId);
+                var drivers = await _driverManager.GetAllDriversByCompanyAsync(companyId, user);
+
+                model.ShopOptions = shops.Select(s => new SelectListItem
+                {
+                    Value = s.ShopId.ToString(),
+                    Text = s.Name
+                }).ToList();
+
+                model.DriverOptions = drivers.Select(d => new SelectListItem
+                {
+                    Value = d.DriverId.ToString(),
+                    Text = d.Name
+                }).ToList();
+            }            else
+            {
+                // For drivers, get shop information for display
+                var pickupShop = await _shopManager.GetShopEntityByIdAsync(model.SelectedShopId);
+                
+                model.ShopOptions = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = model.SelectedShopId.ToString(), Text = pickupShop?.Name ?? "Unknown Shop" }
+                };
+                model.DriverOptions = new List<SelectListItem>();
+            }
+
+            // Add role information to ViewData so the partial can use it
+            ViewData["IsCompany"] = isCompany;
+            ViewData["IsDriver"] = isDriver;
+
+            return Partial("_EditPickUpRequestPartial", model);
+        }
     }
 }

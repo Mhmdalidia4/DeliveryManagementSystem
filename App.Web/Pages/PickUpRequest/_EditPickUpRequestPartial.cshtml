@@ -1,0 +1,134 @@
+@model App.Web.ViewModels.EditPickUpRequestViewModel
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var roles = user != null ? await UserManager.GetRolesAsync(user) : new List<string>();
+    var isCompany = ViewData["IsCompany"] as bool? ?? roles.Contains("company");
+    var isDriver = ViewData["IsDriver"] as bool? ?? roles.Contains("driver");
+}
+
+<form id="editPickupForm" method="post">
+    @Html.AntiForgeryToken()    <input type="hidden" name="EditPickUpRequestModel.PickupRequestId" value="@(Model?.PickupRequestId ?? 0)" />
+    <input type="hidden" name="EditPickUpRequestModel.SelectedShopId" value="@(Model?.SelectedShopId ?? 0)" />
+    <input type="hidden" name="EditPickUpRequestModel.RequestedAt" value="@(Model?.RequestedAt?.ToString("yyyy-MM-ddTHH:mm:ss") ?? "")" />
+    
+    <!-- Debug: Show what values are being set -->
+    @if (Model != null)
+    {
+        <!-- Debug comment: PickupRequestId = @Model.PickupRequestId, ShopId = @Model.SelectedShopId -->
+    }
+    
+    <!-- Preserve the current driver assignment if user is driver (can't change it) -->
+    @if (isDriver)
+    {
+        <input type="hidden" name="EditPickUpRequestModel.SelectedDriverId" value="@(Model?.SelectedDriverId ?? 0)" />
+    }
+    
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+    
+    <!-- Pickup Request ID (Read-only) -->
+    <div class="mb-3">
+        <label class="form-label">Pickup Request ID</label>
+        <input type="text" class="form-control" value="@(Model?.PickupRequestId ?? 0)" readonly />
+    </div>
+    
+    <!-- Shop Information (Read-only) -->
+    <div class="mb-3">
+        <label class="form-label">Shop</label>
+        <input type="text" class="form-control" value="@(Model?.ShopOptions?.FirstOrDefault(s => s.Value == Model?.SelectedShopId.ToString())?.Text ?? "Unknown Shop")" readonly />
+    </div>
+    
+    <!-- Requested Date (Read-only) -->
+    <div class="mb-3">
+        <label class="form-label">Requested At</label>
+        <input type="text" class="form-control" value="@(Model?.RequestedAt?.ToString("MMM dd, yyyy HH:mm") ?? "N/A")" readonly />
+    </div>
+    
+    @if (isCompany)
+    {
+        <!-- Driver Assignment (Company only) -->
+        <div class="mb-3">
+            <label for="SelectedDriverId" class="form-label">Driver Assignment</label>
+            <select id="SelectedDriverId" name="EditPickUpRequestModel.SelectedDriverId" class="form-select">
+                <option value="">-- No Driver Assigned --</option>
+                @if (Model?.DriverOptions != null)
+                {
+                    @foreach (var driver in Model.DriverOptions)
+                    {
+                        <option value="@driver.Value" @(driver.Value == Model.SelectedDriverId?.ToString() ? "selected" : "")>@driver.Text</option>
+                    }
+                }
+            </select>
+            <small class="text-muted">Select a driver to assign to this pickup request</small>
+        </div>
+        
+        <!-- Status (Company can change freely) -->
+        <div class="mb-3">
+            <label for="IsCompleted" class="form-label">Status</label>
+            <select id="IsCompleted" name="EditPickUpRequestModel.IsCompleted" class="form-select" required>
+                <option value="false" @(Model != null && Model.IsCompleted == false ? "selected" : "")>Pending</option>
+                <option value="true" @(Model != null && Model.IsCompleted == true ? "selected" : "")>Completed</option>
+            </select>
+        </div>
+    }    else if (isDriver)
+    {
+        <!-- Current Driver (Read-only for driver) -->
+        <div class="mb-3">
+            <label class="form-label">Assigned Driver</label>
+            <input type="text" class="form-control" value="@(Model?.DriverOptions?.FirstOrDefault(d => d.Value == Model?.SelectedDriverId?.ToString())?.Text ?? "Not Assigned")" readonly />
+        </div>
+        
+        <!-- Status (Driver can only change to completed) -->
+        <div class="mb-3">
+            <label for="IsCompleted" class="form-label">Status</label>
+            @if (Model != null && Model.IsCompleted == true)
+            {
+                <!-- Already completed - cannot change back -->
+                <input type="text" class="form-control" value="Completed" readonly />
+                <input type="hidden" name="EditPickUpRequestModel.IsCompleted" value="true" />
+                <small class="text-muted">This pickup has been completed and cannot be changed back to pending.</small>
+            }
+            else
+            {
+                <!-- Can mark as completed -->
+                <select id="IsCompleted" name="EditPickUpRequestModel.IsCompleted" class="form-select" required>
+                    <option value="false" @(Model != null && Model.IsCompleted == false ? "selected" : "")>Pending</option>
+                    <option value="true" @(Model != null && Model.IsCompleted == true ? "selected" : "")>Mark as Completed</option>
+                </select>
+                <small class="text-muted">Once marked as completed, it cannot be changed back to pending.</small>
+            }
+        </div>
+    }
+    else
+    {
+        <!-- For users who are neither company nor driver (fallback) -->
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            You don't have permission to edit this pickup request.
+        </div>
+    }
+    
+    <div class="modal-footer border-0 px-0 pb-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x-lg me-1"></i>Cancel
+        </button>
+        @if (isCompany || isDriver)
+        {
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle me-1"></i>Update Pickup Request
+            </button>
+        }
+    </div>
+</form>
