@@ -5,7 +5,6 @@ using App.Domain.Models;
 using App.Infrastructure.Repositories;
 using App.Infrastructure.Repositories.Base;
 using App.Service.Interface;
-using App.Service.Managers;
 using App.Services.Managers;
 using App.Web.Data;
 using AutoMapper;
@@ -75,7 +74,11 @@ builder.Services.AddScoped<DriverNameResolver>();
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
-builder.Services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
+builder.Services.AddAntiforgery(options => 
+{
+    options.HeaderName = "RequestVerificationToken";
+    options.SuppressXFrameOptionsHeader = false;
+});
 
 // -------------------- BUILD APP --------------------
 var app = builder.Build();

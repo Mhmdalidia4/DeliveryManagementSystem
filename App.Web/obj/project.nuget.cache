@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "6BCk9jQkfiA=",
+  "dgSpecHash": "hDPvv5bRSi4=",
   "success": true,
   "projectFilePath": "C:\\Users\\mad40\\OneDrive\\Desktop\\DeliveryManagementSystem\\App.Web\\App.Web.csproj",
   "expectedPackageFiles": [
@@ -218,8 +218,10 @@
     {
       "code": "NU1701",
       "level": "Warning",
-      "warningLevel": 1,
       "message": "Package 'Microsoft.AspNet.SignalR.Core 2.4.3' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0'. This package may not be fully compatible with your project.",
+      "projectPath": "C:\\Users\\mad40\\OneDrive\\Desktop\\DeliveryManagementSystem\\App.Web\\App.Web.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\mad40\\OneDrive\\Desktop\\DeliveryManagementSystem\\App.Web\\App.Web.csproj",
       "libraryId": "Microsoft.AspNet.SignalR.Core",
       "targetGraphs": [
         "net8.0"
@@ -228,8 +230,10 @@
     {
       "code": "NU1701",
       "level": "Warning",
-      "warningLevel": 1,
       "message": "Package 'Microsoft.Owin 2.1.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0'. This package may not be fully compatible with your project.",
+      "projectPath": "C:\\Users\\mad40\\OneDrive\\Desktop\\DeliveryManagementSystem\\App.Web\\App.Web.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\mad40\\OneDrive\\Desktop\\DeliveryManagementSystem\\App.Web\\App.Web.csproj",
       "libraryId": "Microsoft.Owin",
       "targetGraphs": [
         "net8.0"
@@ -238,8 +242,10 @@
     {
       "code": "NU1701",
       "level": "Warning",
-      "warningLevel": 1,
       "message": "Package 'Microsoft.Owin.Security 2.1.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0'. This package may not be fully compatible with your project.",
+      "projectPath": "C:\\Users\\mad40\\OneDrive\\Desktop\\DeliveryManagementSystem\\App.Web\\App.Web.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\mad40\\OneDrive\\Desktop\\DeliveryManagementSystem\\App.Web\\App.Web.csproj",
       "libraryId": "Microsoft.Owin.Security",
       "targetGraphs": [
         "net8.0"
@@ -248,8 +254,10 @@
     {
       "code": "NU1701",
       "level": "Warning",
-      "warningLevel": 1,
       "message": "Package 'Owin 1.0.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0'. This package may not be fully compatible with your project.",
+      "projectPath": "C:\\Users\\mad40\\OneDrive\\Desktop\\DeliveryManagementSystem\\App.Web\\App.Web.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\mad40\\OneDrive\\Desktop\\DeliveryManagementSystem\\App.Web\\App.Web.csproj",
       "libraryId": "Owin",
       "targetGraphs": [
         "net8.0"

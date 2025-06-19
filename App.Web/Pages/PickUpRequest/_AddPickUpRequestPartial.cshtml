@@ -1,13 +1,20 @@
 ﻿@model App.Web.ViewModels.AddPickUpRequestViewModel
 
 <form id="addPickupForm">
+    @Html.AntiForgeryToken()
     <div class="mb-3">
         <label asp-for="SelectedShopId" class="form-label">Shop</label>
-        <select asp-for="SelectedShopId" asp-items="Model.ShopOptions" class="form-select"></select>
+        <select asp-for="SelectedShopId" asp-items="Model.ShopOptions" class="form-select">
+            <option value="">-- Select Shop --</option>
+        </select>
+        <span asp-validation-for="SelectedShopId" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label asp-for="SelectedDriverId" class="form-label">Driver</label>
-        <select asp-for="SelectedDriverId" asp-items="Model.DriverOptions" class="form-select"></select>
+        <label asp-for="SelectedDriverId" class="form-label">Driver (Optional)</label>
+        <select asp-for="SelectedDriverId" asp-items="Model.DriverOptions" class="form-select">
+            <option value="">-- Select Driver (Optional) --</option>
+        </select>
+        <span asp-validation-for="SelectedDriverId" class="text-danger"></span>
     </div>
     
     <button type="submit" class="btn btn-primary">Create</button>
@@ -19,17 +26,34 @@
         $(function () {
             $('#addPickupForm').submit(function (e) {
                 e.preventDefault();
+                
+                // Clear previous errors
+                $('.text-danger').text('');
+                
+                var formData = $(this).serialize();
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                
                 $.ajax({
-                    url: '?handler=Add',
+                    url: '/PickUpRequest/Index?handler=Add',
                     type: 'POST',
-                    data: $(this).serialize(),
+                    data: formData,
+                    headers: {
+                        'RequestVerificationToken': token
+                    },
                     success: function (response) {
                         if (response.created) {
                             $('#addModal').modal('hide');
                             location.reload();
                         } else {
+                            // Update the modal body with the new content (which may include errors)
                             $('#modalBody').html(response);
                         }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", xhr.responseText);
+                        console.error("Status:", status);
+                        console.error("Error details:", error);
+                        alert("An error occurred while creating the pickup request: " + (xhr.responseJSON?.message || error));
                     }
                 });
             });
