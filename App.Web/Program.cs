@@ -69,6 +69,8 @@ builder.Services.AddScoped<CompanyManager>();
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 
+builder.Services.AddScoped<ShopNameResolver>();
+builder.Services.AddScoped<DriverNameResolver>();
 // -------------------- CORE FRAMEWORK SERVICES --------------------
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
@@ -116,19 +118,19 @@ app.MapControllerRoute(
 //    }
 
 //    async Task CreateUser(string email, string password, string role)
+//{
+//    var user = await userManager.FindByEmailAsync(email);
+//    if (user == null)
 //    {
-//        var user = await userManager.FindByEmailAsync(email);
-//        if (user == null)
-//        {
-//            user = new IdentityUser { UserName = email, Email = email, EmailConfirmed = true };
-//            await userManager.CreateAsync(user, password);
-//            await userManager.AddToRoleAsync(user, role);
-//        }
+//        user = new IdentityUser { UserName = email, Email = email, EmailConfirmed = true };
+//        await userManager.CreateAsync(user, password);
+//        await userManager.AddToRoleAsync(user, role);
 //    }
+//}
 //    await CreateUser("admin@test.com", "Admin123!", "admin");
 //    await CreateUser("company@test.com", "Company123!", "company");
-//    await CreateUser("driver@test.com", "Driver123!", "driver");
-//    await CreateUser("shop@test.com", "Shop123!", "shop");
+//    await CreateUser("driver2@test.com", "Driver123!", "driver");
+//    await CreateUser("shop2@test.com", "Shop123!", "shop");
 //}
 
 app.Run();

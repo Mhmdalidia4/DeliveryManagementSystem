@@ -1,10 +1,11 @@
-﻿using AutoMapper;
-using App.Domain.Models;
-using App.Domain.DTOs;
+﻿using App.Domain.DTOs;
 using App.Domain.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using App.Domain.Interfaces.Base;
+using App.Domain.Models;
+using App.Infrastructure.Repositories;
 using App.Service.Interface;
+using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 
 namespace App.Service.Managers
 {
@@ -14,17 +15,20 @@ namespace App.Service.Managers
         private readonly IBaseRepository<Company> _companyRepo;
         private readonly IMapper _mapper;
         private readonly UserManager<IdentityUser> _userManager;
-
+        private readonly IDriverRepository _driverRepository;
         public DriverManager(
             IBaseRepository<Driver> driverRepo,
             IBaseRepository<Company> companyRepo,
             UserManager<IdentityUser> userManager,
-            IMapper mapper)
+            IMapper mapper,
+            IDriverRepository driverRepository
+            )
         {
             _driverRepo = driverRepo;
             _companyRepo = companyRepo;
             _userManager = userManager;
             _mapper = mapper;
+            _driverRepository = driverRepository;
         }
 
         // 1. Get all drivers for a company (only company owner)
@@ -133,5 +137,17 @@ namespace App.Service.Managers
 
             return _mapper.Map<DriverDto>(driver);
         }
+
+        public async Task<string?> GetDriverNameByIdAsync(int driverId)
+        {
+            var driver = await _driverRepository.GetByIdAsync(driverId);
+            if(driver == null)
+            {
+                return "null"; // or throw an exception if preferred
+            }
+            return driver?.Name;
+        }
+
+        
     }
 }

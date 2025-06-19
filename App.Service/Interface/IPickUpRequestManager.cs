@@ -10,6 +10,7 @@ namespace App.Service.Interface
 {
     public interface IPickUpRequestManager
     {
+
         Task<IEnumerable<PickupRequestDto>> GetAllByUserAsync(IdentityUser currentUser);
         Task<PickupRequestDto> AddAsync(PickupRequestDto dto, IdentityUser currentUser);
         Task DeleteAsync(int requestId, IdentityUser currentUser);

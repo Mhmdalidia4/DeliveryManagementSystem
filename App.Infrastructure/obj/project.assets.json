@@ -4861,11 +4861,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mad40\\source\\repos\\App\\App.Infrastructure\\App.Infrastructure.csproj",
+      "projectUniqueName": "C:\\Users\\mad40\\OneDrive\\Desktop\\DeliveryManagementSystem\\App.Infrastructure\\App.Infrastructure.csproj",
       "projectName": "App.Infrastructure",
-      "projectPath": "C:\\Users\\mad40\\source\\repos\\App\\App.Infrastructure\\App.Infrastructure.csproj",
+      "projectPath": "C:\\Users\\mad40\\OneDrive\\Desktop\\DeliveryManagementSystem\\App.Infrastructure\\App.Infrastructure.csproj",
       "packagesPath": "C:\\Users\\mad40\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\mad40\\source\\repos\\App\\App.Infrastructure\\obj\\",
+      "outputPath": "C:\\Users\\mad40\\OneDrive\\Desktop\\DeliveryManagementSystem\\App.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -4886,8 +4886,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\mad40\\source\\repos\\App\\App.Domain\\App.Domain.csproj": {
-              "projectPath": "C:\\Users\\mad40\\source\\repos\\App\\App.Domain\\App.Domain.csproj"
+            "C:\\Users\\mad40\\OneDrive\\Desktop\\DeliveryManagementSystem\\App.Domain\\App.Domain.csproj": {
+              "projectPath": "C:\\Users\\mad40\\OneDrive\\Desktop\\DeliveryManagementSystem\\App.Domain\\App.Domain.csproj"
             }
           }
         }

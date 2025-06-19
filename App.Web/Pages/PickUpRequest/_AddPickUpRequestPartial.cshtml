@@ -1,0 +1,38 @@
+﻿@model App.Web.ViewModels.AddPickUpRequestViewModel
+
+<form id="addPickupForm">
+    <div class="mb-3">
+        <label asp-for="SelectedShopId" class="form-label">Shop</label>
+        <select asp-for="SelectedShopId" asp-items="Model.ShopOptions" class="form-select"></select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="SelectedDriverId" class="form-label">Driver</label>
+        <select asp-for="SelectedDriverId" asp-items="Model.DriverOptions" class="form-select"></select>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Create</button>
+    
+</form>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('#addPickupForm').submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '?handler=Add',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.created) {
+                            $('#addModal').modal('hide');
+                            location.reload();
+                        } else {
+                            $('#modalBody').html(response);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

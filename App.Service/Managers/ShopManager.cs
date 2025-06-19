@@ -2,6 +2,7 @@
 using App.Domain.Interfaces;
 using App.Domain.Interfaces.Base;
 using App.Domain.Models;
+using App.Infrastructure.Repositories;
 using App.Service.Interface;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
@@ -14,17 +15,20 @@ namespace App.Service.Managers
         private readonly IBaseRepository<Company> _companyRepo;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly IShopRepository _shopRepository;
 
         public ShopManager(
             IBaseRepository<Shop> shopRepo,
             IBaseRepository<Company> companyRepo,
             UserManager<IdentityUser> userManager,
+            IShopRepository shopRepository,
             IMapper mapper)
         {
             _shopRepo = shopRepo;
             _companyRepo = companyRepo;
             _userManager = userManager;
             _mapper = mapper;
+            _shopRepository = shopRepository;
         }
 
         // 1. Get all shops belong to a company (only company owner)
@@ -43,8 +47,35 @@ namespace App.Service.Managers
             var shops = await _shopRepo.FindAsync(s => s.CompanyId == company.CompanyId);
             return _mapper.Map<IEnumerable<ShopDto>>(shops);
         }
+        public async Task<IEnumerable<ShopDto>> GetAllShopsForCompanyUserAsync(int companyid)
+        {
+            var shops = await _shopRepo.FindAsync(s => s.CompanyId == companyid);
+            return _mapper.Map<IEnumerable<ShopDto>>(shops);
+        }
+        public async Task<Shop> GetShopEntityByIdAsync(int shopId)
+        {
+            var shop = await _shopRepo.GetByIdAsync(shopId);
+            if (shop == null)
+                throw new KeyNotFoundException("Shop not found");
+            return shop;
+        }
+        public async Task<string?> GetShopNameByIdAsync(int shopId)
+        {
+            var shop = await _shopRepository.GetByIdAsync(shopId);
+            if (shop == null)
+            {
+                return "null";
+            }
+            return shop?.Name;
+        }
+        public async Task<int> GetShopIdByUserAsync(IdentityUser user)
+        {
+            var shop = (await _shopRepo.FindAsync(s => s.UserId == user.Id)).FirstOrDefault();
+            if (shop == null)
+                throw new KeyNotFoundException("No shop found for user");
 
-
+            return shop.ShopId;
+        }
 
         // 2. Add shop (create IdentityUser, then Shop; only company owner can add)
         public async Task<ShopDto> AddShopAsync(

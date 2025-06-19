@@ -1,6 +1,6 @@
 ﻿namespace App.Web.ViewModels
 {
-    public class PickupRequestViewModel
+    public class PickUpRequestViewModel
     {
         public int PickupRequestId { get; set; }
         public DateTime? RequestedAt { get; set; }

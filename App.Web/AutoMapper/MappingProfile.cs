@@ -50,9 +50,9 @@ namespace App.Service.AutoMapper
             CreateMap<PickUpRequest, PickupRequestDto>().ReverseMap();
 
             // PickupRequest → ViewModel (for display purposes)
-            CreateMap<PickUpRequest, PickupRequestViewModel>()
-                .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop.Name))
-                .ForMember(dest => dest.DriverName, opt => opt.MapFrom(src => src.AssignedDriver.Name));
+            CreateMap<PickupRequestDto, PickUpRequestViewModel>()
+    .ForMember(dest => dest.ShopName, opt => opt.MapFrom<ShopNameResolver>())
+    .ForMember(dest => dest.DriverName, opt => opt.MapFrom<DriverNameResolver>());
         }
     }
 }

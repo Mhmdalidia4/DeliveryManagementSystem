@@ -10,6 +10,7 @@ namespace App.Service.Interface
 {
     public interface IDriverManager
     {
+        Task<string?> GetDriverNameByIdAsync(int DriverId);
         Task<IEnumerable<DriverDto>> GetAllDriversByCompanyAsync(int companyId, IdentityUser currentUser);
         Task<DriverDto> AddDriverAsync(DriverDto driverDto, string driverEmail, string driverPassword, IdentityUser currentUser);
         Task EditDriverAsync(DriverDto driverDto, IdentityUser currentUser);
